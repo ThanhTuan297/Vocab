@@ -1,161 +1,510 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - VocabMaster</title>
+  <title>Ôn Luyện Từ Vựng Tiếng Anh - Đăng Nhập & Đăng Ký</title>
+  
+  <!-- Font Google & Icon -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
+    /* ==========================================
+       1. CẤU HÌNH BIẾN MÀU SẮC & RESET CSS
+       ========================================== */
     :root {
-      --maple-red: #C0392B;
-      --maple-dark: #962D22;
-      --bg-light: #F8F9FA;
+      --primary-color: #C0392B;       /* Đỏ lá phong (Maple Red) */
+      --primary-hover: #A93226;       /* Đỏ đậm khi hover */
+      --bg-gradient-start: #FADBD8;   /* Hồng nhạt background */
+      --bg-gradient-end: #F5EEF8;     /* Tím/Trắng nhạt background */
+      --white: #FFFFFF;
+      --off-white: #F9EBEA;
       --text-dark: #2C3E50;
+      --text-muted: #7F8C8D;
+      --error-color: #E74C3C;
+      --success-color: #27AE60;
+      --border-radius: 16px;
+      --shadow: 0 10px 30px rgba(192, 57, 43, 0.15);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     body {
-      background-color: var(--bg-light);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      padding: 1rem;
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      padding: 20px;
     }
 
-    .login-card {
-      background-color: #ffffff;
-      padding: 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    /* ==========================================
+       2. CONTAINER CHÍNH & CARD
+       ========================================== */
+    .auth-container {
+      background-color: var(--white);
       width: 100%;
-      max-width: 400px;
+      max-width: 440px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid rgba(192, 57, 43, 0.1);
+    }
+
+    /* Header chứa Logo & Slogan */
+    .auth-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+      color: var(--white);
+      padding: 35px 25px 30px;
       text-align: center;
+      position: relative;
     }
 
-    .brand-title {
-      color: var(--maple-red);
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .auth-header i.app-icon {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      color: var(--off-white);
     }
 
-    .subtitle {
-      color: #7f8c8d;
-      font-size: 0.95rem;
-      margin-bottom: 2rem;
+    .auth-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 5px;
+    }
+
+    .auth-header p {
+      font-size: 0.875rem;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    /* ==========================================
+       3. NÚT CHUYỂN TAB (ĐĂNG NHẬP / ĐĂNG KÝ)
+       ========================================== */
+    .tab-switch {
+      display: flex;
+      background-color: #F2F4F4;
+      margin: 20px 25px 0;
+      padding: 4px;
+      border-radius: 12px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .tab-btn.active {
+      background-color: var(--white);
+      color: var(--primary-color);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ==========================================
+       4. FORM ĐĂNG NHẬP & ĐĂNG KÝ
+       ========================================== */
+    .auth-body {
+      padding: 25px;
     }
 
     .form-group {
-      margin-bottom: 1.2rem;
-      text-align: left;
+      margin-bottom: 18px;
+      position: relative;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 0.4rem;
+      font-size: 0.825rem;
       font-weight: 600;
       color: var(--text-dark);
-      font-size: 0.9rem;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .form-group input {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
       font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px 12px 42px;
+      border: 1.5px solid #E5E7E9;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: var(--text-dark);
       outline: none;
-      transition: border-color 0.3s ease;
+      transition: var(--transition);
+      background-color: #FAFAFA;
     }
 
-    .form-group input:focus {
-      border-color: var(--maple-red);
+    .form-control:focus {
+      border-color: var(--primary-color);
+      background-color: var(--white);
+      box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.1);
     }
 
+    .form-control:focus + i {
+      color: var(--primary-color);
+    }
+
+    /* Thông báo lỗi */
+    .alert-box {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-box.error {
+      background-color: #FDEDEC;
+      color: var(--error-color);
+      border: 1px solid #FADBD8;
+      display: flex;
+    }
+
+    .alert-box.success {
+      background-color: #EAFAF1;
+      color: var(--success-color);
+      border: 1px solid #D5F5E3;
+      display: flex;
+    }
+
+    /* Nút bấm Submit */
     .btn-submit {
       width: 100%;
-      padding: 0.8rem;
-      background-color: var(--maple-red);
-      color: #ffffff;
+      padding: 13px;
+      background-color: var(--primary-color);
+      color: var(--white);
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
       font-size: 1rem;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-top: 0.5rem;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(192, 57, 43, 0.25);
     }
 
     .btn-submit:hover {
-      background-color: var(--maple-dark);
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
     }
 
-    .error-msg {
-      color: var(--maple-red);
-      font-size: 0.85rem;
-      margin-top: 1rem;
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    /* Ẩn hiện Form */
+    .auth-form {
       display: none;
-      font-weight: 600;
+    }
+
+    .auth-form.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer nhỏ bên dưới */
+    .auth-footer {
+      text-align: center;
+      padding: 0 25px 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive cho di động */
+    @media (max-width: 480px) {
+      .auth-container {
+        border-radius: 12px;
+      }
+      .auth-header {
+        padding: 25px 20px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="login-card">
-    <h1 class="brand-title">VocabMaster</h1>
-    <p class="subtitle">Please login to access</p>
+  <div class="auth-container">
+    <!-- Header -->
+    <div class="auth-header">
+      <i class="fa-solid fa-graduation-cap app-icon"></i>
+      <h1>English Vocab Master</h1>
+      <p>Nâng tầm vốn từ vựng tiếng Anh mỗi ngày</p>
+    </div>
 
-    <form id="loginForm" onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter username" required autocomplete="off">
-      </div>
+    <!-- Thanh chuyển tab -->
+    <div class="tab-switch">
+      <button class="tab-btn active" id="tab-login-btn" onclick="switchTab('login')">
+        <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+      </button>
+      <button class="tab-btn" id="tab-register-btn" onclick="switchTab('register')">
+        <i class="fa-solid fa-user-plus"></i> Đăng ký
+      </button>
+    </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter password" required>
-      </div>
+    <div class="auth-body">
+      <!-- Khung hiển thị thông báo lỗi / thành công -->
+      <div id="alert-message" class="alert-box"></div>
 
-      <button type="submit" class="btn-submit">Login</button>
-      
-      <p id="errorMsg" class="error-msg">Invalid username or password!</p>
-    </form>
+      <!-- FORM ĐĂNG NHẬP -->
+      <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="login-username">Tài khoản</label>
+          <div class="input-wrapper">
+            <input type="text" id="login-username" class="form-control" placeholder="Nhập tài khoản" required autocomplete="username">
+            <i class="fa-solid fa-user"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Mật khẩu</label>
+          <div class="input-wrapper">
+            <input type="password" id="login-password" class="form-control" placeholder="Nhập mật khẩu" required autocomplete="current-password">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          Đăng Nhập <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+        </button>
+      </form>
+
+      <!-- FORM ĐĂNG KÝ -->
+      <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="reg-username">Tài khoản mới</label>
+          <div class="input-wrapper">
+            <input type="text" id="reg-username" class="form-control" placeholder="Tạo tên tài khoản" required>
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password">Mật khẩu</label>
+          <div class="input-wrapper">
+            <input type="password" id="reg-password" class="form-control" placeholder="Tạo mật khẩu" required>
+            <i class="fa-solid fa-key"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-confirm-password">Xác nhận mật khẩu</label>
+          <div class="input-wrapper">
+            <input type="password" id="reg-confirm-password" class="form-control" placeholder="Nhập lại mật khẩu" required>
+            <i class="fa-solid fa-check-double"></i>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          Tạo Tài Khoản
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      &copy; 2026 English Vocab Master. All rights reserved.
+    </div>
   </div>
 
+  <!-- ==========================================
+     5. XỬ LÝ JAVASCRIPT LOGIC
+     ========================================== -->
   <script>
-    function handleLogin(event) {
-      event.preventDefault();
+    // --- THỜI GIAN HẾT HẠN SESSION (Ví dụ: 30 phút = 30 * 60 * 1000 ms) ---
+    const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
 
-      const userVal = document.getElementById('username').value.trim();
-      const passVal = document.getElementById('password').value.trim();
-      const errorMsg = document.getElementById('errorMsg');
+    // --- TÀI KHOẢN MẪU (HARDCODED NGẦM) ---
+    const ACCOUNTS = [
+      { username: "12367", password: "12367", role: "user", redirect: "trangchu.html" },
+      { username: "2006",  password: "2006",  role: "admin", redirect: "admin.html" }
+    ];
 
-      // Kiểm tra tài khoản User thường
-      if (userVal === '12367' && passVal === '12367') {
-        sessionStorage.setItem('isLoggedIn', 'true');
-        sessionStorage.setItem('role', 'user');
-        window.location.href = 'trangchu.html';
-      } 
-      // Kiểm tra tài khoản Admin
-      else if (userVal === '2006' && passVal === '2006') {
-        sessionStorage.setItem('isLoggedIn', 'true');
-        sessionStorage.setItem('role', 'admin');
-        window.location.href = 'admin.html';
-      } 
-      // Sai tài khoản / mật khẩu
-      else {
-        errorMsg.style.display = 'block';
+    /**
+     * Tự động kiểm tra phiên đăng nhập ngay khi mở trang index.html
+     */
+    document.addEventListener("DOMContentLoaded", function () {
+      checkExistingSession();
+    });
+
+    /**
+     * Chuyển đổi giữa 2 tab Đăng nhập và Đăng ký
+     */
+    function switchTab(tab) {
+      hideAlert();
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const loginBtn = document.getElementById('tab-login-btn');
+      const registerBtn = document.getElementById('tab-register-btn');
+
+      if (tab === 'login') {
+        loginForm.classList.add('active');
+        registerForm.classList.remove('active');
+        loginBtn.classList.add('active');
+        registerBtn.classList.remove('active');
+      } else {
+        registerForm.classList.add('active');
+        loginForm.classList.remove('active');
+        registerBtn.classList.add('active');
+        loginBtn.classList.remove('active');
       }
     }
-  </script>
 
+    /**
+     * Xử lý submit form Đăng nhập
+     */
+    function handleLogin(event) {
+      event.preventDefault();
+      hideAlert();
+
+      const usernameInput = document.getElementById('login-username').value.trim();
+      const passwordInput = document.getElementById('login-password').value.trim();
+
+      // Kiểm tra tài khoản trong danh sách
+      const foundUser = ACCOUNTS.find(
+        acc => acc.username === usernameInput && acc.password === passwordInput
+      );
+
+      if (foundUser) {
+        // Tạo đối tượng lưu session
+        const sessionData = {
+          isLoggedIn: true,
+          username: foundUser.username,
+          role: foundUser.role,
+          loginTime: Date.now()
+        };
+
+        // Lưu vào localStorage
+        localStorage.setItem('userSession', JSON.stringify(sessionData));
+
+        showAlert('success', 'Đăng nhập thành công! Đang chuyển hướng...');
+
+        // Chuyển hướng trang sau 1 giây
+        setTimeout(() => {
+          window.location.href = foundUser.redirect;
+        }, 1000);
+
+      } else {
+        showAlert('error', 'Tài khoản hoặc mật khẩu không chính xác!');
+      }
+    }
+
+    /**
+     * Xử lý submit form Đăng ký (Mô phỏng UI)
+     */
+    function handleRegister(event) {
+      event.preventDefault();
+      hideAlert();
+
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value.trim();
+      const confirmPassword = document.getElementById('reg-confirm-password').value.trim();
+
+      if (password !== confirmPassword) {
+        showAlert('error', 'Mật khẩu xác nhận không khớp!');
+        return;
+      }
+
+      showAlert('success', 'Đăng ký thành công! Vui lòng đăng nhập với tài khoản hệ thống đã cấp.');
+      
+      // Chuyển về tab đăng nhập sau khi đăng ký thành công
+      setTimeout(() => {
+        document.getElementById('register-form').reset();
+        switchTab('login');
+      }, 1500);
+    }
+
+    /**
+     * Kiểm tra trạng thái Session hiện tại
+     * Nếu còn hạn -> Tự động chuyển hướng đến trang tương ứng
+     * Nếu hết hạn -> Tự động xóa session cũ
+     */
+    function checkExistingSession() {
+      const sessionRaw = localStorage.getItem('userSession');
+      if (!sessionRaw) return;
+
+      try {
+        const session = JSON.parse(sessionRaw);
+        const currentTime = Date.now();
+
+        // Kiểm tra hết hạn session
+        if (currentTime - session.loginTime > SESSION_TIMEOUT_MS) {
+          localStorage.removeItem('userSession');
+          showAlert('error', 'Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại!');
+          return;
+        }
+
+        // Nếu còn hạn -> Tự động chuyển hướng
+        if (session.isLoggedIn) {
+          if (session.role === 'admin') {
+            window.location.href = 'admin.html';
+          } else if (session.role === 'user') {
+            window.location.href = 'trangchu.html';
+          }
+        }
+      } catch (e) {
+        localStorage.removeItem('userSession');
+      }
+    }
+
+    /**
+     * Hiển thị thông báo trên giao diện
+     */
+    function showAlert(type, message) {
+      const alertBox = document.getElementById('alert-message');
+      alertBox.className = `alert-box ${type}`;
+      
+      const icon = type === 'error' 
+        ? '<i class="fa-solid fa-circle-exclamation"></i>' 
+        : '<i class="fa-solid fa-circle-check"></i>';
+
+      alertBox.innerHTML = `${icon} <span>${message}</span>`;
+    }
+
+    /**
+     * Ẩn thông báo
+     */
+    function hideAlert() {
+      const alertBox = document.getElementById('alert-message');
+      alertBox.className = 'alert-box';
+      alertBox.innerHTML = '';
+    }
+  </script>
 </body>
 </html>
