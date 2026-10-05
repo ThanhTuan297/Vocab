@@ -70,22 +70,6 @@
       background-color: var(--maple-dark);
     }
 
-    .btn-logout {
-      background-color: #fff;
-      color: var(--maple-red);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-logout:hover {
-      background-color: #f1f1f1;
-      transform: translateY(-1px);
-    }
-
     /* Main Content */
     .container {
       max-width: 900px;
@@ -149,7 +133,6 @@
       <li><a href="trangchu.html" class="active">Home</a></li>
       <li><a href="tuvung.html">Vocabulary</a></li>
       <li><a href="luyentap.html">Practice</a></li>
-      <li><button class="btn-logout" onclick="logout()">Logout</button></li>
     </ul>
   </nav>
 
@@ -164,24 +147,5 @@
     </div>
   </main>
 
-  <script>
-    // 1. Kiểm tra trạng thái đăng nhập
-    function checkAuth() {
-      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-      if (!isLoggedIn || isLoggedIn !== 'true') {
-        alert('Please login first!');
-        window.location.href = 'index.html';
-      }
-    }
-
-    // 2. Chức năng Đăng xuất
-    function logout() {
-      sessionStorage.clear();
-      window.location.href = 'index.html';
-    }
-
-    // Chạy kiểm tra phiên đăng nhập ngay khi tải trang
-    checkAuth();
-  </script>
 </body>
 </html>
