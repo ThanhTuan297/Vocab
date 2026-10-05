@@ -11,32 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Authentication & Session Check (Runs immediately before rendering) -->
-  <script>
-    (function checkAuth() {
-      const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-      const sessionRaw = localStorage.getItem('userSession');
-
-      if (!sessionRaw) {
-        window.location.href = 'index.html';
-        return;
-      }
-
-      try {
-        const session = JSON.parse(sessionRaw);
-        const isExpired = (Date.now() - session.loginTime) > SESSION_TIMEOUT_MS;
-
-        if (!session.isLoggedIn || isExpired) {
-          localStorage.removeItem('userSession');
-          window.location.href = 'index.html';
-        }
-      } catch (e) {
-        localStorage.removeItem('userSession');
-        window.location.href = 'index.html';
-      }
-    })();
-  </script>
-
   <style>
     /* ==========================================
        1. COLOR VARIABLES & GENERAL RESET
@@ -44,7 +18,7 @@
     :root {
       --primary-color: #C0392B;       /* Maple Red / Crimson */
       --primary-hover: #A93226;       /* Darker Crimson */
-      --bg-light: #F9EBEA;            /* Light maple tint background */
+      --bg-light: #FDFEFE;
       --card-bg: #FFFFFF;
       --text-dark: #2C3E50;
       --text-muted: #7F8C8D;
@@ -63,7 +37,7 @@
     }
 
     body {
-      background-color: var(--bg-light);
+      background-color: #F9EBEA; /* Light maple tint background */
       color: var(--text-dark);
       min-height: 100vh;
       display: flex;
@@ -370,7 +344,7 @@
     <div class="page-header">
       <div class="page-title">
         <h1><i class="fa-solid fa-list-check"></i> Vocabulary Management</h1>
-        <p>Type your vocabulary below. Words are automatically saved long-term and new rows appear as you type!</p>
+        <p>Type your vocabulary below. New rows are added automatically as you write!</p>
       </div>
 
       <div class="action-controls">
@@ -410,16 +384,14 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    &copy; 2026 VocabMaster. T.T
+    &copy; 2026 VocabMaster. All rights reserved.
   </footer>
 
   <!-- ==========================================
      6. JAVASCRIPT LOGIC
      ========================================== -->
   <script>
-    // Persistent Storage Key (localStorage for long-term saving)
-    const PERSISTENT_STORAGE_KEY = 'vocab_master_list';
-    
+    const STORAGE_KEY = 'vocab_list_session';
     const tbody = document.getElementById('vocab-tbody');
     const btnPractice = document.getElementById('btn-practice');
     const selectedCountSpan = document.getElementById('selected-count');
@@ -428,30 +400,30 @@
      * Initialize page content on load
      */
     document.addEventListener('DOMContentLoaded', () => {
-      loadSavedVocabulary();
+      loadSessionData();
       updatePracticeButtonState();
     });
 
     /**
-     * Load existing vocabulary from localStorage (persistent long-term storage)
+     * Load existing vocabulary from sessionStorage or create an initial row
      */
-    function loadSavedVocabulary() {
-      const savedData = localStorage.getItem(PERSISTENT_STORAGE_KEY);
+    function loadSessionData() {
+      const savedData = sessionStorage.getItem(STORAGE_KEY);
       if (savedData) {
         try {
           const words = JSON.parse(savedData);
-          if (Array.isArray(words) && words.length > 0) {
+          if (words.length > 0) {
             words.forEach(item => addRow(item.word, item.meaning, item.selected));
-            // Always ensure an empty row at the bottom for new entry
+            // Ensure there's always one empty row at the bottom for new entry
             addRow();
             updateRowNumbers();
             return;
           }
         } catch (e) {
-          console.error("Error reading saved vocabulary from localStorage:", e);
+          console.error("Error reading vocabulary session", e);
         }
       }
-      // Default: Create initial empty row if no data exists
+      // Default: create initial empty row
       addRow();
     }
 
@@ -486,18 +458,18 @@
     }
 
     /**
-     * Auto-add new row when typing in the last row & automatically save to localStorage
+     * Auto-add new row when user types in the last row
      */
     function handleInput(inputElement) {
       const currentRow = inputElement.closest('tr');
       const isLastRow = currentRow === tbody.lastElementChild;
 
-      // Automatically append a new empty row if user starts typing in the last row
+      // If user starts typing in the last row, automatically append a new empty row
       if (isLastRow && inputElement.value.trim() !== '') {
         addRow();
       }
 
-      savePersistentData();
+      saveSessionData();
       updatePracticeButtonState();
     }
 
@@ -505,17 +477,17 @@
      * Checkbox state change listener
      */
     function handleCheckboxChange() {
-      savePersistentData();
+      saveSessionData();
       updatePracticeButtonState();
     }
 
     /**
-     * Delete a row from the table & update localStorage
+     * Delete a row from the table
      */
     function deleteRow(btn) {
       const row = btn.closest('tr');
       
-      // Keep at least one row active in the table
+      // Keep at least one row active
       if (tbody.rows.length === 1) {
         row.querySelector('.input-word').value = '';
         row.querySelector('.input-meaning').value = '';
@@ -533,7 +505,7 @@
       }
 
       updateRowNumbers();
-      savePersistentData();
+      saveSessionData();
       updatePracticeButtonState();
     }
 
@@ -556,20 +528,20 @@
         const word = row.querySelector('.input-word').value.trim();
         const meaning = row.querySelector('.input-meaning').value.trim();
 
-        // Only toggle non-empty rows or all rows when deselecting
+        // Only toggle non-empty rows or all rows
         if (word || meaning || !selectState) {
           chk.checked = selectState;
         }
       });
 
-      savePersistentData();
+      saveSessionData();
       updatePracticeButtonState();
     }
 
     /**
-     * Save vocabulary list persistently to localStorage (Long-term persistence)
+     * Collect valid table entries and save to sessionStorage
      */
-    function savePersistentData() {
+    function saveSessionData() {
       const vocabList = [];
       Array.from(tbody.rows).forEach(row => {
         const word = row.querySelector('.input-word').value.trim();
@@ -581,11 +553,11 @@
         }
       });
 
-      localStorage.setItem(PERSISTENT_STORAGE_KEY, JSON.stringify(vocabList));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(vocabList));
     }
 
     /**
-     * Update "Start Practice" button active state and count badge
+     * Update "Start Practice" button state and count badge
      */
     function updatePracticeButtonState() {
       let count = 0;
@@ -602,7 +574,7 @@
     }
 
     /**
-     * Store selected items to sessionStorage and navigate to luyentap.html
+     * Save practice list and navigate to luyentap.html
      */
     function startPractice() {
       const practiceList = [];
@@ -617,24 +589,23 @@
       });
 
       if (practiceList.length === 0) {
-        alert("Please select words with both English Word and Meaning filled!");
+        alert("Please ensure selected items have both word and meaning filled!");
         return;
       }
 
-      // Store practice words in sessionStorage for luyentap.html to read
+      // Store practice words specifically for luyentap.html
       sessionStorage.setItem('practice_words', JSON.stringify(practiceList));
-      
-      // Navigate to practice page
+
       window.location.href = 'luyentap.html';
     }
 
     /**
-     * Logout Handler
+     * Clear local session data on logout without redirecting
      */
     function logout() {
       localStorage.removeItem('userSession');
       sessionStorage.clear();
-      window.location.href = 'index.html';
+      alert("Session cleared.");
     }
 
     /**
