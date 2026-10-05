@@ -1,757 +1,363 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Practice Quiz - VocabMaster</title>
-  
-  <!-- Google Fonts & Font Awesome Icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vocab - Luyện Tập</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <style>
-    /* ==========================================
-       1. COLOR VARIABLES & GENERAL RESET
-       ========================================== */
     :root {
-      --primary-color: #C0392B;       /* Crimson */
-      --primary-hover: #A93226;
-      --bg-light: #F9EBEA;
-      --card-bg: #FFFFFF;
-      --text-dark: #2C3E50;
-      --text-muted: #7F8C8D;
-      --correct-color: #27AE60;
-      --correct-bg: #EAFAF1;
-      --correct-border: #2ECC71;
-      --wrong-color: #C0392B;
-      --wrong-bg: #FDEDEC;
-      --wrong-border: #E74C3C;
-      --border-color: #EAEDED;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 8px 24px rgba(192, 57, 43, 0.12);
-      --transition: all 0.25s ease-in-out;
-      --border-radius: 16px;
+      --ink: #0f1420;
+      --ink-soft: #171d2c;
+      --line: rgba(194, 165, 102, 0.18);
+      --paper: #f2efe8;
+      --muted: #9aa0ae;
+      --gold: #c2a566;
+      --ok: #5fae7e;
+      --bad: #d9776b;
+      --serif: "Playfair Display", "Times New Roman", serif;
+      --sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
     }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: var(--ink); color: var(--paper); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    [hidden] { display: none !important; }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+    /* ---------- Header ---------- */
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px clamp(16px, 5vw, 64px);
+      background: rgba(15, 20, 32, 0.9);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
     }
+    .logo { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; letter-spacing: 0.06em; color: var(--paper); text-decoration: none; }
+    .nav { display: flex; gap: clamp(4px, 1.5vw, 14px); list-style: none; }
+    .nav a, .nav button {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px; border: 0; background: none; cursor: pointer;
+      font: 500 0.9rem var(--sans); color: var(--muted); text-decoration: none;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav a:hover, .nav button:hover, .nav a[aria-current="page"] { color: var(--paper); background: rgba(194, 165, 102, 0.12); }
+    .nav a[aria-current="page"] { color: var(--gold); }
+    svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-    body {
-      background-color: var(--bg-light);
-      color: var(--text-dark);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ==========================================
-       2. NAVIGATION BAR
-       ========================================== */
-    .navbar {
-      background-color: var(--card-bg);
-      border-bottom: 2px solid var(--primary-color);
-      box-shadow: var(--shadow-sm);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 0 2rem;
-    }
-
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      height: 70px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      list-style: none;
-    }
-
-    .nav-item a {
-      text-decoration: none;
-      color: var(--text-dark);
-      font-weight: 600;
-      font-size: 0.95rem;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-item a:hover,
-    .nav-item a.active {
-      color: var(--primary-color);
-      background-color: #FDEDEC;
-    }
-
-    /* ==========================================
-       3. MAIN CONTAINER & STATE VIEWS
-       ========================================== */
-    .main-container {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 0 20px;
-      width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .view-card {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-md);
-      padding: 30px 35px;
-      border: 1px solid var(--border-color);
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    /* ---------- Layout ---------- */
+    main { max-width: 680px; margin: 0 auto; padding: 36px clamp(16px, 4vw, 32px) 80px; }
+    .panel { background: var(--ink-soft); border: 1px solid var(--line); border-radius: 14px; padding: clamp(22px, 5vw, 36px); }
 
     .btn {
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: var(--transition);
-      text-decoration: none;
+      display: inline-block; padding: 12px 22px; border-radius: 8px; cursor: pointer; text-decoration: none; text-align: center;
+      font: 500 0.95rem var(--sans); border: 1px solid var(--line);
+      background: var(--ink); color: var(--paper); transition: border-color 0.2s, background 0.2s;
     }
+    .btn:hover { border-color: var(--gold); }
+    .btn-primary { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 600; }
+    .btn-primary:hover { background: #d3b877; }
 
-    .btn-primary {
-      background-color: var(--primary-color);
-      color: white;
-      box-shadow: 0 4px 12px rgba(192, 57, 43, 0.25);
+    /* ---------- Gate ---------- */
+    .gate { text-align: center; }
+    .gate p { line-height: 1.7; margin-bottom: 24px; color: var(--paper); }
+
+    /* ---------- Quiz ---------- */
+    .stats { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 0.9rem; color: var(--muted); margin-bottom: 10px; }
+    .stats .ok { color: var(--ok); }
+    .stats .bad { color: var(--bad); }
+    .stats b { font-weight: 600; }
+    .bar { height: 4px; border-radius: 4px; background: var(--ink-soft); overflow: hidden; margin-bottom: 22px; }
+    .bar i { display: block; height: 100%; width: 0; background: var(--gold); transition: width 0.3s ease; }
+
+    .card { text-align: center; padding: clamp(32px, 8vw, 56px) 20px; margin-bottom: 18px; }
+    .word { font-family: var(--serif); font-weight: 800; font-size: clamp(2rem, 7vw, 3.2rem); line-height: 1.2; overflow-wrap: anywhere; }
+    .pinyin { margin-top: 10px; color: var(--gold); font-size: 1.05rem; }
+
+    .options { display: grid; gap: 10px; }
+    .opt {
+      display: flex; align-items: center; gap: 14px; width: 100%;
+      padding: 14px 16px; border-radius: 10px; cursor: pointer; text-align: left;
+      font: 400 1rem var(--sans); color: var(--paper);
+      background: var(--ink-soft); border: 1px solid var(--line);
+      transition: border-color 0.2s, background 0.2s;
     }
+    .opt:hover:not(:disabled) { border-color: var(--gold); }
+    .opt:disabled { cursor: default; }
+    .opt .tag { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); font-size: 0.8rem; font-weight: 600; color: var(--gold); }
+    .opt.correct { background: rgba(95, 174, 126, 0.18); border-color: var(--ok); }
+    .opt.correct .tag { background: var(--ok); border-color: var(--ok); color: var(--ink); }
+    .opt.wrong { background: rgba(217, 119, 107, 0.18); border-color: var(--bad); }
+    .opt.wrong .tag { background: var(--bad); border-color: var(--bad); color: var(--ink); }
 
-    .btn-primary:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-2px);
-    }
+    .feedback { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-top: 18px; }
+    .feedback p { font-weight: 500; line-height: 1.5; }
+    .feedback p.ok { color: var(--ok); }
+    .feedback p.bad { color: var(--bad); }
 
-    .btn-secondary {
-      background-color: #F2F4F4;
-      color: var(--text-dark);
-    }
+    /* ---------- Result ---------- */
+    .result { text-align: center; }
+    .result h1 { font-family: var(--serif); font-size: clamp(1.4rem, 4vw, 1.8rem); margin-bottom: 18px; }
+    .percent { font-family: var(--serif); font-weight: 800; font-size: clamp(3.4rem, 14vw, 5rem); color: var(--gold); line-height: 1; }
+    .summary { display: flex; justify-content: center; gap: 28px; margin: 18px 0 26px; }
+    .summary div { font-size: 0.85rem; color: var(--muted); }
+    .summary b { display: block; font-size: 1.5rem; font-weight: 600; }
+    .summary .ok b { color: var(--ok); }
+    .summary .bad b { color: var(--bad); }
 
-    .btn-secondary:hover {
-      background-color: #E5E7E9;
-    }
+    .review { text-align: left; border-top: 1px solid var(--line); padding-top: 20px; margin-bottom: 26px; }
+    .review h2 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
+    .review ul { list-style: none; display: grid; gap: 8px; }
+    .review li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 14px; border-radius: 8px; background: var(--ink); border: 1px solid var(--line); }
+    .review li span:last-child { color: var(--muted); text-align: right; }
+    .review .none { color: var(--ok); }
+    .actions { display: grid; gap: 10px; }
 
-    /* ==========================================
-       4. EMPTY STATE VIEW
-       ========================================== */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .empty-state i {
-      font-size: 4rem;
-      color: var(--primary-color);
-      margin-bottom: 20px;
-      opacity: 0.8;
-    }
-
-    .empty-state h2 {
-      font-size: 1.6rem;
-      margin-bottom: 12px;
-      color: var(--text-dark);
-    }
-
-    .empty-state p {
-      color: var(--text-muted);
-      margin-bottom: 25px;
-      font-size: 1rem;
-      line-height: 1.5;
-    }
-
-    /* ==========================================
-       5. QUIZ VIEW
-       ========================================== */
-    .quiz-header {
-      margin-bottom: 25px;
-    }
-
-    .stats-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 12px;
-    }
-
-    .score-info {
-      display: flex;
-      gap: 15px;
-    }
-
-    .score-correct { color: var(--correct-color); }
-    .score-wrong { color: var(--wrong-color); }
-
-    .progress-container {
-      width: 100%;
-      height: 10px;
-      background-color: #F2F4F4;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background-color: var(--primary-color);
-      transition: width 0.3s ease;
-      border-radius: 20px;
-    }
-
-    .question-card {
-      text-align: center;
-      padding: 25px 0 15px;
-    }
-
-    .word-label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .question-word {
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      margin-bottom: 30px;
-      word-break: break-word;
-    }
-
-    .answers-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-
-    .answer-btn {
-      padding: 16px 20px;
-      background-color: #FAFAFA;
-      border: 2px solid #E5E7E9;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-dark);
-      cursor: pointer;
-      text-align: left;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .answer-btn .prefix {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      background-color: #E5E7E9;
-      font-size: 0.85rem;
-      color: var(--text-dark);
-      flex-shrink: 0;
-    }
-
-    .answer-btn:hover:not(:disabled) {
-      border-color: var(--primary-color);
-      background-color: #FDEDEC;
-    }
-
-    .answer-btn.correct {
-      background-color: var(--correct-bg) !important;
-      border-color: var(--correct-border) !important;
-      color: var(--correct-color) !important;
-    }
-
-    .answer-btn.correct .prefix {
-      background-color: var(--correct-color) !important;
-      color: white !important;
-    }
-
-    .answer-btn.wrong {
-      background-color: var(--wrong-bg) !important;
-      border-color: var(--wrong-border) !important;
-      color: var(--wrong-color) !important;
-    }
-
-    .answer-btn.wrong .prefix {
-      background-color: var(--wrong-color) !important;
-      color: white !important;
-    }
-
-    .quiz-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 50px;
-      border-top: 1px solid var(--border-color);
-      padding-top: 20px;
-    }
-
-    .feedback-msg {
-      font-weight: 600;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .feedback-msg.correct-text { color: var(--correct-color); }
-    .feedback-msg.wrong-text { color: var(--wrong-color); }
-
-    /* ==========================================
-       6. RESULT VIEW
-       ========================================== */
-    .result-view { text-align: center; }
-    .result-header { margin-bottom: 30px; }
-    .result-header i { font-size: 3.5rem; color: var(--primary-color); margin-bottom: 12px; }
-    .result-header h2 { font-size: 1.8rem; color: var(--text-dark); margin-bottom: 6px; }
-
-    .result-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-
-    .stat-card {
-      background-color: #FAFAFA;
-      border: 1px solid var(--border-color);
-      padding: 18px 10px;
-      border-radius: 12px;
-    }
-
-    .stat-card .value { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; }
-    .stat-card .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-
-    .stat-accuracy { color: var(--primary-color); }
-    .stat-correct { color: var(--correct-color); }
-    .stat-wrong { color: var(--wrong-color); }
-
-    .review-section { text-align: left; margin-bottom: 30px; }
-    .review-section h3 { font-size: 1.1rem; margin-bottom: 15px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
-
-    .review-list {
-      list-style: none;
-      max-height: 220px;
-      overflow-y: auto;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-    }
-
-    .review-item {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.95rem;
-    }
-
-    .review-item:last-child { border-bottom: none; }
-    .review-item .word { font-weight: 700; color: var(--primary-color); }
-    .review-item .meaning { color: var(--text-muted); }
-
-    .result-actions { display: flex; gap: 15px; justify-content: center; }
-    .result-actions .btn { flex: 1; }
-
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: auto;
-    }
-
-    @media (max-width: 600px) {
-      .navbar { padding: 0 1rem; }
-      .nav-links span { display: none; }
-      .view-card { padding: 25px 20px; }
-      .answers-grid { grid-template-columns: 1fr; }
-      .result-stats-grid { grid-template-columns: 1fr; }
-      .result-actions { flex-direction: column; }
+    @media (max-width: 640px) {
+      .nav span { display: none; }
+      .nav a, .nav button { padding: 9px; }
+      .review li { flex-direction: column; gap: 2px; }
+      .review li span:last-child { text-align: left; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAVIGATION BAR -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="trangchu.html" class="brand-logo">
-        <i class="fa-solid fa-graduation-cap"></i> VocabMaster
-      </a>
-      <ul class="nav-links">
-        <li class="nav-item">
-          <a href="trangchu.html"><i class="fa-solid fa-house"></i> <span>Home</span></a>
-        </li>
-        <li class="nav-item">
-          <a href="tuvung.html"><i class="fa-solid fa-book"></i> <span>Vocabulary</span></a>
-        </li>
-        <li class="nav-item">
-          <a href="luyentap.html" class="active"><i class="fa-solid fa-dumbbell"></i> <span>Practice</span></a>
-        </li>
+  <header class="topbar">
+    <a class="logo" href="index.html" aria-label="VOCAB - Trang chủ">VOCAB</a>
+    <nav aria-label="Điều hướng chính">
+      <ul class="nav">
+        <li><a href="index.html" title="Trang chủ">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Trang chủ</span></a></li>
+        <li><a href="tuvung.html" title="Danh sách từ vựng">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span>Từ vựng</span></a></li>
+        <li><a href="luyentap.html" aria-current="page" title="Luyện tập">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>Luyện tập</span></a></li>
+        <li><button type="button" id="logout" title="Đăng xuất">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>Đăng xuất</span></button></li>
       </ul>
-    </div>
-  </nav>
+    </nav>
+  </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="main-container">
+  <main>
+    <!-- Thông báo thiếu từ -->
+    <section id="gate" class="panel gate" hidden>
+      <p>Bạn cần chọn ít nhất 4 từ vựng để bắt đầu luyện tập tạo câu hỏi trắc nghiệm! Vui lòng quay lại trang Lưu Từ Vựng để tích chọn thêm.</p>
+      <a class="btn btn-primary" href="tuvung.html">Quay lại Lưu Từ Vựng</a>
+    </section>
 
-    <!-- VIEW 1: EMPTY STATE -->
-    <div id="view-empty" class="view-card empty-state hidden">
-      <i class="fa-solid fa-folder-open"></i>
-      <h2>No Vocabulary Selected</h2>
-      <p>No vocabulary selected for practice. Please return to the Vocabulary page and select words to practice.</p>
-      <a href="tuvung.html" class="btn btn-primary">
-        <i class="fa-solid fa-arrow-left"></i> Go to Vocabulary Page
-      </a>
-    </div>
+    <!-- Làm bài -->
+    <section id="quiz" hidden>
+      <div class="stats">
+        <span>Tiến trình: <b id="progress">0/0</b></span>
+        <span><span class="ok">Đúng: <b id="cntOk">0</b></span> &nbsp; <span class="bad">Sai: <b id="cntBad">0</b></span></span>
+      </div>
+      <div class="bar" role="progressbar" aria-label="Tiến trình" aria-valuemin="0" aria-valuemax="100"><i id="barFill"></i></div>
 
-    <!-- VIEW 2: QUIZ INTERFACE -->
-    <div id="view-quiz" class="view-card hidden">
-      <div class="quiz-header">
-        <div class="stats-bar">
-          <span class="progress-info">
-            Question <span id="current-q-num">1</span>/<span id="total-q-num">10</span>
-          </span>
-          <div class="score-info">
-            <span class="score-correct"><i class="fa-solid fa-circle-check"></i> Correct: <span id="score-correct-count">0</span></span>
-            <span class="score-wrong"><i class="fa-solid fa-circle-xmark"></i> Wrong: <span id="score-wrong-count">0</span></span>
-          </div>
-        </div>
-        <div class="progress-container">
-          <div id="quiz-progress-bar" class="progress-bar"></div>
-        </div>
+      <div class="panel card">
+        <div class="word" id="word"></div>
+        <div class="pinyin" id="pinyin" hidden></div>
       </div>
 
-      <div class="question-card">
-        <div class="word-label">Translate this word</div>
-        <div id="question-word" class="question-word">Loading...</div>
+      <div class="options" id="options"></div>
 
-        <div id="answers-container" class="answers-grid">
-          <!-- Answer buttons injected dynamically by JS -->
-        </div>
+      <div class="feedback" id="feedback" hidden>
+        <p id="msg"></p>
+        <button type="button" class="btn btn-primary" id="nextBtn">Tiếp tục &gt;</button>
       </div>
+    </section>
 
-      <div class="quiz-footer">
-        <div id="feedback-msg" class="feedback-msg"></div>
-        <button id="btn-next" class="btn btn-primary hidden" onclick="nextQuestion()">
-          Continue <i class="fa-solid fa-arrow-right"></i>
-        </button>
+    <!-- Kết quả -->
+    <section id="result" class="panel result" hidden>
+      <h1>Kết quả đợt luyện tập</h1>
+      <div class="percent" id="percent">0%</div>
+      <div class="summary">
+        <div class="ok"><b id="rOk">0</b>Câu đúng</div>
+        <div class="bad"><b id="rBad">0</b>Câu sai</div>
       </div>
-    </div>
-
-    <!-- VIEW 3: QUIZ RESULT -->
-    <div id="view-result" class="view-card result-view hidden">
-      <div class="result-header">
-        <i class="fa-solid fa-trophy"></i>
-        <h2>Practice Completed!</h2>
-        <p style="color: var(--text-muted);">Great job on completing your vocabulary session.</p>
+      <div class="review">
+        <h2>Từ cần lưu ý</h2>
+        <ul id="wrongList"></ul>
       </div>
-
-      <div class="result-stats-grid">
-        <div class="stat-card">
-          <div id="res-accuracy" class="value stat-accuracy">0%</div>
-          <div class="label">Accuracy</div>
-        </div>
-        <div class="stat-card">
-          <div id="res-correct" class="value stat-correct">0</div>
-          <div class="label">Correct</div>
-        </div>
-        <div class="stat-card">
-          <div id="res-wrong" class="value stat-wrong">0</div>
-          <div class="label">Incorrect</div>
-        </div>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="restartBtn">Làm Bắt Đầu Lại Đợt Này</button>
+        <button type="button" class="btn" id="retryWrongBtn">Ôn Lại Riêng Câu Sai</button>
+        <a class="btn" href="tuvung.html">Thay Đổi Tùy Chọn</a>
       </div>
-
-      <div id="review-section" class="review-section hidden">
-        <h3><i class="fa-solid fa-circle-exclamation" style="color: var(--primary-color);"></i> Words to Review</h3>
-        <ul id="review-list" class="review-list"></ul>
-      </div>
-
-      <div class="result-actions">
-        <button class="btn btn-secondary" onclick="restartQuiz()">
-          <i class="fa-solid fa-rotate-right"></i> Retry This Set
-        </button>
-        <a href="tuvung.html" class="btn btn-primary">
-          <i class="fa-solid fa-list-check"></i> Select Other Words
-        </a>
-      </div>
-    </div>
-
+    </section>
   </main>
 
-  <footer class="footer">
-    &copy; 2026 VocabMaster. All rights reserved.
-  </footer>
-
   <script>
-    const FALLBACK_DISTRACTORS = [
-      "Thành công", "Kiên trì", "Khám phá", "Cơ hội", "Sáng tạo", 
-      "Phát triển", "Thách thức", "Mục tiêu", "Động lực", "Thói quen", 
-      "Tập trung", "Thành tựu", "Cải thiện", "Tri thức", "Kinh nghiệm"
-    ];
+    const PRACTICE_KEY = "vocab_practice";
+    const $ = id => document.getElementById(id);
 
-    let practiceWords = [];
-    let currentQuestionIndex = 0;
-    let correctCount = 0;
-    let wrongCount = 0;
-    let wrongWordsList = [];
-    let isAnswered = false;
+    /* --- Đọc rồi xóa ngay dữ liệu tạm: F5 / đóng tab / rời trang đều không còn dữ liệu --- */
+    let pool = []; // toàn bộ từ của đợt (dùng làm nguồn đáp án nhiễu)
+    try {
+      const raw = sessionStorage.getItem(PRACTICE_KEY);
+      const data = JSON.parse(raw || "[]");
+      if (Array.isArray(data)) {
+        pool = data
+          .filter(d => d && String(d.word || "").trim() && String(d.meaning || "").trim())
+          .map(d => ({ word: String(d.word).trim(), meaning: String(d.meaning).trim(), pinyin: d.pinyin ? String(d.pinyin).trim() : "" }));
+      }
+    } catch (e) { pool = []; }
+    const clearSession = () => { try { sessionStorage.removeItem(PRACTICE_KEY); } catch (e) {} };
+    clearSession();
+    window.addEventListener("pagehide", clearSession);
 
-    const viewEmpty = document.getElementById('view-empty');
-    const viewQuiz = document.getElementById('view-quiz');
-    const viewResult = document.getElementById('view-result');
+    $("logout").addEventListener("click", () => { clearSession(); window.location.href = "index.html"; });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initQuiz();
+    /* --- Tiện ích --- */
+    const shuffle = arr => {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+    const show = name => ["gate", "quiz", "result"].forEach(id => { $(id).hidden = id !== name; });
+
+    /* --- Trạng thái --- */
+    let quiz = [], idx = 0, okCount = 0, wrongWords = [], answered = false, currentOptions = [];
+
+    function startQuiz(words) {
+      quiz = shuffle(words);
+      idx = 0; okCount = 0; wrongWords = [];
+      show("quiz");
+      renderQuestion();
+    }
+
+    function buildOptions(item) {
+      // Đáp án nhiễu: nghĩa của các từ khác trong cả bộ đã chọn, không trùng nghĩa đúng
+      const seen = new Set([item.meaning.toLowerCase()]);
+      const distractors = [];
+      for (const w of shuffle(pool)) {
+        const key = w.meaning.toLowerCase();
+        if (!seen.has(key)) { seen.add(key); distractors.push(w.meaning); }
+        if (distractors.length === 3) break;
+      }
+      return shuffle([item.meaning, ...distractors]);
+    }
+
+    function updateStats() {
+      $("progress").textContent = Math.min(idx + (answered ? 1 : 0), quiz.length) + "/" + quiz.length;
+      $("cntOk").textContent = okCount;
+      $("cntBad").textContent = wrongWords.length;
+      const pct = quiz.length ? ((idx + (answered ? 1 : 0)) / quiz.length) * 100 : 0;
+      $("barFill").style.width = pct + "%";
+      document.querySelector(".bar").setAttribute("aria-valuenow", Math.round(pct));
+    }
+
+    function renderQuestion() {
+      const item = quiz[idx];
+      answered = false;
+      $("word").textContent = item.word;
+      $("pinyin").textContent = item.pinyin;
+      $("pinyin").hidden = !item.pinyin;
+      $("feedback").hidden = true;
+
+      currentOptions = buildOptions(item);
+      const box = $("options");
+      box.replaceChildren();
+      currentOptions.forEach((text, i) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "opt";
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = "ABCD"[i];
+        const label = document.createElement("span");
+        label.textContent = text;
+        b.append(tag, label);
+        b.addEventListener("click", () => choose(i));
+        box.appendChild(b);
+      });
+      updateStats();
+    }
+
+    function choose(i) {
+      if (answered) return;
+      answered = true;
+      const item = quiz[idx];
+      const buttons = $("options").children;
+      const correctIdx = currentOptions.indexOf(item.meaning);
+      const msg = $("msg");
+
+      Array.from(buttons).forEach(b => { b.disabled = true; });
+      buttons[correctIdx].classList.add("correct");
+
+      if (i === correctIdx) {
+        okCount++;
+        msg.className = "ok";
+        msg.textContent = "Chính xác! Bạn đã nhớ rất tốt từ vựng này!";
+      } else {
+        buttons[i].classList.add("wrong");
+        wrongWords.push(item);
+        msg.className = "bad";
+        msg.textContent = "Chưa chính xác! Nghĩa đúng: " + item.meaning;
+      }
+
+      const last = idx === quiz.length - 1;
+      $("nextBtn").textContent = last ? "Xem kết quả" : "Tiếp tục >";
+      $("feedback").hidden = false;
+      $("nextBtn").focus();
+      updateStats();
+    }
+
+    function next() {
+      if (!answered) return;
+      if (idx === quiz.length - 1) return showResult();
+      idx++;
+      renderQuestion();
+    }
+
+    function showResult() {
+      const total = quiz.length;
+      $("percent").textContent = Math.round((okCount / total) * 100) + "%";
+      $("rOk").textContent = okCount;
+      $("rBad").textContent = wrongWords.length;
+
+      const list = $("wrongList");
+      list.replaceChildren();
+      if (!wrongWords.length) {
+        const li = document.createElement("li");
+        li.className = "none";
+        li.textContent = "Tuyệt vời! Bạn không sai từ nào trong đợt này.";
+        list.appendChild(li);
+      } else {
+        wrongWords.forEach(w => {
+          const li = document.createElement("li");
+          const a = document.createElement("span");
+          const b = document.createElement("span");
+          a.textContent = w.word;
+          b.textContent = w.meaning;
+          li.append(a, b);
+          list.appendChild(li);
+        });
+      }
+      $("retryWrongBtn").hidden = wrongWords.length === 0;
+      show("result");
+      window.scrollTo(0, 0);
+    }
+
+    $("nextBtn").addEventListener("click", next);
+    $("restartBtn").addEventListener("click", () => startQuiz(pool));
+    $("retryWrongBtn").addEventListener("click", () => startQuiz(wrongWords.slice())); // đáp án nhiễu vẫn lấy từ cả bộ `pool`
+
+    // Phím tắt: A-D hoặc 1-4 để chọn đáp án, Enter để tiếp tục
+    document.addEventListener("keydown", e => {
+      if ($("quiz").hidden) return;
+      const k = e.key.toLowerCase();
+      const i = "abcd".indexOf(k) >= 0 ? "abcd".indexOf(k) : "1234".indexOf(k);
+      if (!answered && i >= 0 && i < currentOptions.length) choose(i);
     });
 
-    function initQuiz() {
-      const storedData = sessionStorage.getItem('practice_words');
-
-      if (!storedData) {
-        showView(viewEmpty);
-        return;
-      }
-
-      try {
-        practiceWords = JSON.parse(storedData);
-        if (!Array.isArray(practiceWords) || practiceWords.length === 0) {
-          showView(viewEmpty);
-          return;
-        }
-
-        shuffleArray(practiceWords);
-        
-        currentQuestionIndex = 0;
-        correctCount = 0;
-        wrongCount = 0;
-        wrongWordsList = [];
-
-        showView(viewQuiz);
-        loadQuestion();
-      } catch (e) {
-        console.error("Error parsing practice words:", e);
-        showView(viewEmpty);
-      }
-    }
-
-    function showView(targetView) {
-      viewEmpty.classList.add('hidden');
-      viewQuiz.classList.add('hidden');
-      viewResult.classList.add('hidden');
-
-      targetView.classList.remove('hidden');
-    }
-
-    function loadQuestion() {
-      isAnswered = false;
-      document.getElementById('feedback-msg').innerHTML = '';
-      document.getElementById('feedback-msg').className = 'feedback-msg';
-      document.getElementById('btn-next').classList.add('hidden');
-
-      const currentItem = practiceWords[currentQuestionIndex];
-
-      const total = practiceWords.length;
-      document.getElementById('current-q-num').textContent = currentQuestionIndex + 1;
-      document.getElementById('total-q-num').textContent = total;
-      document.getElementById('score-correct-count').textContent = correctCount;
-      document.getElementById('score-wrong-count').textContent = wrongCount;
-
-      const progressPercent = ((currentQuestionIndex) / total) * 100;
-      document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
-
-      document.getElementById('question-word').textContent = currentItem.word;
-
-      const options = [currentItem.meaning];
-
-      const otherMeaningsInSet = practiceWords
-        .filter(item => item.meaning !== currentItem.meaning)
-        .map(item => item.meaning);
-      
-      shuffleArray(otherMeaningsInSet);
-
-      for (let m of otherMeaningsInSet) {
-        if (options.length < 4 && !options.includes(m)) {
-          options.push(m);
-        }
-      }
-
-      if (options.length < 4) {
-        const fallbacksCopy = [...FALLBACK_DISTRACTORS];
-        shuffleArray(fallbacksCopy);
-
-        for (let f of fallbacksCopy) {
-          if (options.length < 4 && !options.includes(f)) {
-            options.push(f);
-          }
-        }
-      }
-
-      shuffleArray(options);
-
-      const answersContainer = document.getElementById('answers-container');
-      answersContainer.innerHTML = '';
-
-      const prefixes = ['A', 'B', 'C', 'D'];
-      options.forEach((optText, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'answer-btn';
-        btn.innerHTML = `<span class="prefix">${prefixes[idx]}</span> <span class="opt-text">${escapeHtml(optText)}</span>`;
-        btn.onclick = () => handleAnswerSelect(btn, optText, currentItem.meaning, currentItem);
-        answersContainer.appendChild(btn);
-      });
-    }
-
-    function handleAnswerSelect(selectedBtn, selectedText, correctMeaning, currentItem) {
-      if (isAnswered) return;
-      isAnswered = true;
-
-      const allBtns = document.querySelectorAll('.answer-btn');
-      const feedbackMsg = document.getElementById('feedback-msg');
-
-      allBtns.forEach(btn => btn.disabled = true);
-
-      if (selectedText === correctMeaning) {
-        correctCount++;
-        selectedBtn.classList.add('correct');
-        feedbackMsg.className = 'feedback-msg correct-text';
-        feedbackMsg.innerHTML = `<i class="fa-solid fa-circle-check"></i> Excellent! That is correct.`;
-      } else {
-        wrongCount++;
-        selectedBtn.classList.add('wrong');
-        
-        wrongWordsList.push(currentItem);
-
-        allBtns.forEach(btn => {
-          const textSpan = btn.querySelector('.opt-text');
-          if (textSpan && textSpan.textContent.trim() === correctMeaning) {
-            btn.classList.add('correct');
-          }
-        });
-
-        feedbackMsg.className = 'feedback-msg wrong-text';
-        feedbackMsg.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Incorrect! Correct answer: <strong>${escapeHtml(correctMeaning)}</strong>`;
-      }
-
-      document.getElementById('score-correct-count').textContent = correctCount;
-      document.getElementById('score-wrong-count').textContent = wrongCount;
-
-      document.getElementById('btn-next').classList.remove('hidden');
-    }
-
-    function nextQuestion() {
-      currentQuestionIndex++;
-      if (currentQuestionIndex < practiceWords.length) {
-        loadQuestion();
-      } else {
-        showResults();
-      }
-    }
-
-    function showResults() {
-      document.getElementById('quiz-progress-bar').style.width = '100%';
-
-      const total = practiceWords.length;
-      const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-
-      document.getElementById('res-accuracy').textContent = `${accuracy}%`;
-      document.getElementById('res-correct').textContent = correctCount;
-      document.getElementById('res-wrong').textContent = wrongCount;
-
-      const reviewSection = document.getElementById('review-section');
-      const reviewList = document.getElementById('review-list');
-      reviewList.innerHTML = '';
-
-      if (wrongWordsList.length > 0) {
-        wrongWordsList.forEach(item => {
-          const li = document.createElement('li');
-          li.className = 'review-item';
-          li.innerHTML = `
-            <span class="word">${escapeHtml(item.word)}</span>
-            <span class="meaning">${escapeHtml(item.meaning)}</span>
-          `;
-          reviewList.appendChild(li);
-        });
-        reviewSection.classList.remove('hidden');
-      } else {
-        reviewSection.classList.add('hidden');
-      }
-
-      showView(viewResult);
-    }
-
-    function restartQuiz() {
-      shuffleArray(practiceWords);
-      currentQuestionIndex = 0;
-      correctCount = 0;
-      wrongCount = 0;
-      wrongWordsList = [];
-
-      showView(viewQuiz);
-      loadQuestion();
-    }
-
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-
-    function escapeHtml(text) {
-      return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+    /* --- Khởi động --- */
+    if (pool.length < 4) show("gate");
+    else startQuiz(pool);
   </script>
 </body>
 </html>
