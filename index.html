@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Register - VocabMaster</title>
+  <style>
+    :root {
+      --maple-red: #C0392B;
+      --maple-dark: #962D22;
+      --bg-light: #F8F9FA;
+      --text-dark: #2C3E50;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .auth-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .brand-title {
+      text-align: center;
+      color: var(--maple-red);
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    /* Tab Switcher */
+    .tab-group {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #eee;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.8rem;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      color: var(--maple-red);
+      border-bottom: 3px solid var(--maple-red);
+    }
+
+    /* Form UI */
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--text-dark);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      border-color: var(--maple-red);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: var(--maple-red);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.3s;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--maple-dark);
+    }
+
+    .error-msg {
+      color: var(--maple-red);
+      font-size: 0.85rem;
+      margin-top: 0.8rem;
+      text-align: center;
+      display: none;
+    }
+
+    .form-box {
+      display: none;
+    }
+
+    .form-box.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <h1 class="brand-title">VocabMaster</h1>
+
+    <!-- Tabs chuyển Đăng nhập / Đăng ký -->
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Form Đăng Nhập -->
+    <form id="loginForm" class="form-box active" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="loginUser">Username / Account</label>
+        <input type="text" id="loginUser" placeholder="Enter account" required>
+      </div>
+      <div class="form-group">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="btn-submit">Login</button>
+      <div id="loginError" class="error-msg">Incorrect username or password!</div>
+    </form>
+
+    <!-- Form Đăng Ký (Giao diện phụ) -->
+    <form id="registerForm" class="form-box" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label for="regUser">Username</label>
+        <input type="text" id="regUser" placeholder="Choose a username" required>
+      </div>
+      <div class="form-group">
+        <label for="regPass">Password</label>
+        <input type="password" id="regPass" placeholder="Choose a password" required>
+      </div>
+      <button type="submit" class="btn-submit">Create Account</button>
+    </form>
+  </div>
+
+  <script>
+    // 1. Chuyển đổi giữa 2 tab Đăng nhập / Đăng ký
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.form-box').forEach(form => form.classList.remove('active'));
+
+      if (tab === 'login') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('loginForm').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classListDưới đây là mã nguồn làm lại hoàn chỉnh cho file **`index.html`** với giao diện tối giản, phối màu đỏ lá phong & trắng, chỉ cần nhập tài khoản `12367` và mật khẩu `12367` (hoặc tài khoản Admin `2006` / `2006`) là đăng nhập trực tiếp:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Register - VocabMaster</title>
+  <style>
+    :root {
+      --maple-red: #C0392B;
+      --maple-dark: #962D22;
+      --bg-white: #FFFFFF;
+      --bg-light: #F8F9FA;
+      --text-dark: #2C3E50;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .auth-card {
+      background-color: var(--bg-white);
+      width: 100%;
+      max-width: 400px;
+      padding: 2.5rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-top: 5px solid var(--maple-red);
+    }
+
+    .brand-title {
+      text-align: center;
+      color: var(--maple-red);
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    .tab-container {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #EEE;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+      color: var(--maple-red);
+      border-bottom: 3px solid var(--maple-red);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #CCC
