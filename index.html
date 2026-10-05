@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ôn Luyện Từ Vựng Tiếng Anh - Đăng Nhập & Đăng Ký</title>
+  <title>Login & Sign Up - VocabMaster</title>
   
-  <!-- Font Google & Icon -->
+  <!-- Google Fonts & Font Awesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,22 +13,22 @@
 
   <style>
     /* ==========================================
-       1. CẤU HÌNH BIẾN MÀU SẮC & RESET CSS
+       1. COLOR VARIABLES & GENERAL RESET
        ========================================== */
     :root {
-      --primary-color: #C0392B;       /* Đỏ lá phong (Maple Red) */
-      --primary-hover: #A93226;       /* Đỏ đậm khi hover */
-      --bg-gradient-start: #FADBD8;   /* Hồng nhạt background */
-      --bg-gradient-end: #F5EEF8;     /* Tím/Trắng nhạt background */
-      --white: #FFFFFF;
-      --off-white: #F9EBEA;
+      --primary-color: #C0392B;       /* Crimson / Maple Red */
+      --primary-hover: #A93226;       /* Darker Crimson */
+      --bg-gradient-start: #F9EBEA;   /* Soft maple tint light bg */
+      --bg-gradient-end: #FDEDEC;
+      --card-bg: #FFFFFF;
       --text-dark: #2C3E50;
       --text-muted: #7F8C8D;
+      --border-color: #E5E7E9;
       --error-color: #E74C3C;
       --success-color: #27AE60;
       --border-radius: 16px;
-      --shadow: 0 10px 30px rgba(192, 57, 43, 0.15);
-      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --shadow: 0 10px 30px rgba(192, 57, 43, 0.12);
+      --transition: all 0.3s ease;
     }
 
     * {
@@ -39,69 +39,68 @@
     }
 
     body {
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-dark);
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
       padding: 20px;
     }
 
     /* ==========================================
-       2. CONTAINER CHÍNH & CARD
+       2. LOGIN & SIGN UP CARD CONTAINER
        ========================================== */
     .auth-container {
-      background-color: var(--white);
+      background: var(--card-bg);
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
+      padding: 40px 32px;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
-      overflow: hidden;
-      border: 1px solid rgba(192, 57, 43, 0.1);
+      border: 1px solid var(--border-color);
     }
 
-    /* Header chứa Logo & Slogan */
-    .auth-header {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-      color: var(--white);
-      padding: 35px 25px 30px;
+    .brand-header {
       text-align: center;
-      position: relative;
+      margin-bottom: 28px;
     }
 
-    .auth-header i.app-icon {
-      font-size: 2.8rem;
+    .brand-header i {
+      font-size: 2.5rem;
+      color: var(--primary-color);
       margin-bottom: 10px;
-      color: var(--off-white);
     }
 
-    .auth-header h1 {
-      font-size: 1.5rem;
+    .brand-header h1 {
+      font-size: 1.8rem;
       font-weight: 700;
+      color: var(--primary-color);
       letter-spacing: -0.5px;
-      margin-bottom: 5px;
     }
 
-    .auth-header p {
-      font-size: 0.875rem;
-      opacity: 0.9;
-      font-weight: 400;
+    .brand-header p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
     }
 
     /* ==========================================
-       3. NÚT CHUYỂN TAB (ĐĂNG NHẬP / ĐĂNG KÝ)
+       3. TAB SWITCHER
        ========================================== */
-    .tab-switch {
+    .tab-group {
       display: flex;
-      background-color: #F2F4F4;
-      margin: 20px 25px 0;
+      background-color: #F8F9F9;
       padding: 4px;
-      border-radius: 12px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
     }
 
     .tab-btn {
       flex: 1;
-      padding: 10px 0;
+      padding: 10px;
       border: none;
       background: transparent;
       font-weight: 600;
@@ -113,107 +112,424 @@
     }
 
     .tab-btn.active {
-      background-color: var(--white);
+      background: var(--card-bg);
       color: var(--primary-color);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
     /* ==========================================
-       4. FORM ĐĂNG NHẬP & ĐĂNG KÝ
+       4. FORM STYLES
        ========================================== */
-    .auth-body {
-      padding: 25px;
+    .auth-form {
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .auth-form.active {
+      display: flex;
     }
 
     .form-group {
-      margin-bottom: 18px;
-      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
     .form-group label {
-      display: block;
-      font-size: 0.825rem;
+      font-size: 0.85rem;
       font-weight: 600;
       color: var(--text-dark);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
     .input-wrapper {
       position: relative;
+      display: flex;
+      align-items: center;
     }
 
     .input-wrapper i {
       position: absolute;
       left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
       color: var(--text-muted);
       font-size: 1rem;
-      transition: var(--transition);
     }
 
-    .form-control {
+    .form-input {
       width: 100%;
       padding: 12px 14px 12px 42px;
-      border: 1.5px solid #E5E7E9;
+      border: 1px solid var(--border-color);
       border-radius: 10px;
       font-size: 0.95rem;
-      color: var(--text-dark);
       outline: none;
       transition: var(--transition);
       background-color: #FAFAFA;
     }
 
-    .form-control:focus {
+    .form-input:focus {
       border-color: var(--primary-color);
-      background-color: var(--white);
-      box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.1);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
     }
 
-    .form-control:focus + i {
-      color: var(--primary-color);
-    }
-
-    /* Thông báo lỗi */
-    .alert-box {
+    /* ==========================================
+       5. NOTIFICATIONS & BUTTONS
+       ========================================== */
+    .message-box {
+      display: none;
       padding: 10px 14px;
       border-radius: 8px;
       font-size: 0.85rem;
-      margin-bottom: 18px;
-      display: none;
+      font-weight: 500;
       align-items: center;
       gap: 8px;
     }
 
-    .alert-box.error {
+    .message-box.error {
+      display: flex;
       background-color: #FDEDEC;
       color: var(--error-color);
       border: 1px solid #FADBD8;
-      display: flex;
     }
 
-    .alert-box.success {
-      background-color: #EAFAF1;
+    .message-box.success {
+      display: flex;
+      background-color: #E8F8F5;
       color: var(--success-color);
-      border: 1px solid #D5F5E3;
-      display: flex;
+      border: 1px solid #A3E4D7;
     }
 
-    /* Nút bấm Submit */
     .btn-submit {
       width: 100%;
       padding: 13px;
       background-color: var(--primary-color);
-      color: var(--white);
+      color: white;
       border: none;
       border-radius: 10px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
+      margin-top: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(192, 57, 43, 0.25);
+    }
+
+    /* ==========================================
+       6. FOOTER
+       ========================================== */
+    .footer {
+      margin-top: 24px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Responsive adjustment for extra small screens */
+    @media (max-width: 480px) {
+      .auth-container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUTHENTICATION CARD CONTAINER -->
+  <div class="auth-container">
+    
+    <!-- BRAND LOGO & TITLE -->
+    <div class="brand-header">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <h1>VocabMaster</h1>
+      <p>English Vocabulary Learning Portal</p>
+    </div>
+
+    <!-- TAB SWITCHER BUTTONS -->
+    <div class="tab-group">
+      <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+      <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- NOTIFICATION BOX -->
+    <div id="message-box" class="message-box">
+      <i class="fa-solid fa-circle-exclamation" id="message-icon"></i>
+      <span id="message-text"></span>
+    </div>
+
+    <!-- SIGN IN FORM -->
+    <form id="form-signin" class="auth-form active" onsubmit="handleSignIn(event)">
+      <div class="form-group">
+        <label for="signin-username">Username</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" id="signin-username" class="form-input" placeholder="Enter your username" required autocomplete="username">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="signin-password">Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+      </button>
+    </form>
+
+    <!-- SIGN UP FORM (SIMULATION) -->
+    <form id="form-signup" class="auth-form" onsubmit="handleSignUp(event)">
+      <div class="form-group">
+        <label for="signup-username">Username</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-user-plus"></i>
+          <input type="text" id="signup-username" class="form-input" placeholder="Choose a username" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="signup-password" class="form-input" placeholder="Create a password" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <i class="fa-solid fa-user-check"></i> Create Account
+      </button>
+    </form>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    &copy; 2026 VocabMaster. All rights reserved.
+  </footer>
+
+  <!-- ==========================================
+     7. JAVASCRIPT LOGIC
+     ========================================== -->
+  <script>
+    // DOM Element References
+    const tabSignin = document.getElementById('tab-signin');
+    const tabSignup = document.getElementById('tab-signup');
+    const formSignin = document.getElementById('form-signin');
+    const formSignup = document.getElementById('formMã nguồn hoàn chỉnh cho file `index.html` tích hợp HTML, CSS và JavaScript trong cùng một file duy nhất, đáp ứng đúng các yêu cầu giao diện và logic đăng nhập:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VocabMaster - Sign In / Sign Up</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+  <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+  <link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap)" rel="stylesheet">
+  <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+
+  <style>
+    /* ==========================================
+       1. COLOR VARIABLES & GENERAL RESET
+       ========================================== */
+    :root {
+      --primary-color: #C0392B;       /* Maple Red / Crimson */
+      --primary-hover: #A93226;       /* Darker Crimson */
+      --bg-light: #F9EBEA;            /* Light maple tint background */
+      --card-bg: #FFFFFF;
+      --text-dark: #2C3E50;
+      --text-muted: #7F8C8D;
+      --border-color: #EAEDED;
+      --error-color: #E74C3C;
+      --success-color: #27AE60;
+      --shadow-md: 0 10px 30px rgba(192, 57, 43, 0.15);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --border-radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #FDEDEC 0%, #F9EBEA 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* ==========================================
+       2. AUTH CONTAINER & CARD DESIGN
+       ========================================== */
+    .auth-card {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 420px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .auth-header {
+      text-align: center;
+      padding: 35px 30px 20px;
+    }
+
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================
+       3. TOGGLE TABS
+       ========================================== */
+    .auth-tabs {
+      display: flex;
+      background-color: #F4F6F6;
+      margin: 0 30px;
+      border-radius: 10px;
+      padding: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .tab-btn.active {
+      background-color: var(--card-bg);
+      color: var(--primary-color);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    /* ==========================================
+       4. FORMS & INPUTS
+       ========================================== */
+    .auth-body {
+      padding: 25px 30px 35px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px 12px 42px;
+      border: 1.5px solid #D5D8DC;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+      background-color: #FAFAFA;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary-color);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.1);
+    }
+
+    /* Message Alert */
+    .alert-message {
+      display: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 18px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-error {
+      background-color: #FDEDEC;
+      color: var(--error-color);
+      border: 1px solid #FADBD8;
+    }
+
+    .alert-success {
+      background-color: #EAFAF1;
+      color: var(--success-color);
+      border: 1px solid #D5F5E3;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
     }
 
     .btn-submit:hover {
@@ -221,290 +537,80 @@
       transform: translateY(-1px);
     }
 
-    .btn-submit:active {
-      transform: translateY(0);
-    }
-
-    /* Ẩn hiện Form */
     .auth-form {
       display: none;
     }
 
     .auth-form.active {
       display: block;
-      animation: fadeIn 0.3s ease-in-out;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Footer nhỏ bên dưới */
-    .auth-footer {
+    .footer-text {
       text-align: center;
-      padding: 0 25px 20px;
+      margin-top: 20px;
       font-size: 0.8rem;
       color: var(--text-muted);
-    }
-
-    /* Responsive cho di động */
-    @media (max-width: 480px) {
-      .auth-container {
-        border-radius: 12px;
-      }
-      .auth-header {
-        padding: 25px 20px;
-      }
     }
   </style>
 </head>
 <body>
 
-  <div class="auth-container">
-    <!-- Header -->
+  <div class="auth-card">
+    
+    <!-- HEADER -->
     <div class="auth-header">
-      <i class="fa-solid fa-graduation-cap app-icon"></i>
-      <h1>English Vocab Master</h1>
-      <p>Nâng tầm vốn từ vựng tiếng Anh mỗi ngày</p>
+      <div class="brand-logo">
+        <i class="fa-solid fa-graduation-cap"></i> VocabMaster
+      </div>
+      <p class="auth-subtitle">Master English Vocabulary Effortlessly</p>
     </div>
 
-    <!-- Thanh chuyển tab -->
-    <div class="tab-switch">
-      <button class="tab-btn active" id="tab-login-btn" onclick="switchTab('login')">
-        <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
-      </button>
-      <button class="tab-btn" id="tab-register-btn" onclick="switchTab('register')">
-        <i class="fa-solid fa-user-plus"></i> Đăng ký
-      </button>
+    <!-- TABS SWITCH -->
+    <div class="auth-tabs">
+      <button id="tab-signin" class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
+      <button id="tab-signup" class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
     </div>
 
+    <!-- BODY FORMS -->
     <div class="auth-body">
-      <!-- Khung hiển thị thông báo lỗi / thành công -->
-      <div id="alert-message" class="alert-box"></div>
+      
+      <!-- NOTIFICATION ALERT -->
+      <div id="alert-box" class="alert-message">
+        <i id="alert-icon" class="fa-solid"></i>
+        <span id="alert-text"></span>
+      </div>
 
-      <!-- FORM ĐĂNG NHẬP -->
-      <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
+      <!-- SIGN IN FORM -->
+      <form id="signin-form" class="auth-form active" onsubmit="handleSignIn(event)">
         <div class="form-group">
-          <label for="login-username">Tài khoản</label>
+          <label class="form-label" for="signin-username">Username</label>
           <div class="input-wrapper">
-            <input type="text" id="login-username" class="form-control" placeholder="Nhập tài khoản" required autocomplete="username">
-            <i class="fa-solid fa-user"></i>
+            <i class="fa-solid fa-user input-icon"></i>
+            <input type="text" id="signin-username" class="form-input" placeholder="Enter your username" required autocomplete="username">
           </div>
         </div>
 
         <div class="form-group">
-          <label for="login-password">Mật khẩu</label>
+          <label class="form-label" for="signin-password">Password</label>
           <div class="input-wrapper">
-            <input type="password" id="login-password" class="form-control" placeholder="Nhập mật khẩu" required autocomplete="current-password">
-            <i class="fa-solid fa-lock"></i>
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
           </div>
         </div>
 
         <button type="submit" class="btn-submit">
-          Đăng Nhập <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+          <span>Sign In</span> <i class="fa-solid fa-arrow-right"></i>
         </button>
       </form>
 
-      <!-- FORM ĐĂNG KÝ -->
-      <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
+      <!-- SIGN UP FORM -->
+      <form id="signup-form" class="auth-form" onsubmit="handleSignUp(event)">
         <div class="form-group">
-          <label for="reg-username">Tài khoản mới</label>
+          <label class="form-label" for="signup-username">Username</label>
           <div class="input-wrapper">
-            <input type="text" id="reg-username" class="form-control" placeholder="Tạo tên tài khoản" required>
-            <i class="fa-solid fa-user-plus"></i>
+            <i class="fa-solid fa-user input-icon"></i>
+            <input type="text" id="signup-username" class="form-input" placeholder="Choose a username" required>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="reg-password">Mật khẩu</label>
-          <div class="input-wrapper">
-            <input type="password" id="reg-password" class="form-control" placeholder="Tạo mật khẩu" required>
-            <i class="fa-solid fa-key"></i>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="reg-confirm-password">Xác nhận mật khẩu</label>
-          <div class="input-wrapper">
-            <input type="password" id="reg-confirm-password" class="form-control" placeholder="Nhập lại mật khẩu" required>
-            <i class="fa-solid fa-check-double"></i>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-submit">
-          Tạo Tài Khoản
-        </button>
-      </form>
-    </div>
-
-    <div class="auth-footer">
-      &copy; 2026 English Vocab Master. All rights reserved.
-    </div>
-  </div>
-
-  <!-- ==========================================
-     5. XỬ LÝ JAVASCRIPT LOGIC
-     ========================================== -->
-  <script>
-    // --- THỜI GIAN HẾT HẠN SESSION (Ví dụ: 30 phút = 30 * 60 * 1000 ms) ---
-    const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
-
-    // --- TÀI KHOẢN MẪU (HARDCODED NGẦM) ---
-    const ACCOUNTS = [
-      { username: "12367", password: "12367", role: "user", redirect: "trangchu.html" },
-      { username: "2006",  password: "2006",  role: "admin", redirect: "admin.html" }
-    ];
-
-    /**
-     * Tự động kiểm tra phiên đăng nhập ngay khi mở trang index.html
-     */
-    document.addEventListener("DOMContentLoaded", function () {
-      checkExistingSession();
-    });
-
-    /**
-     * Chuyển đổi giữa 2 tab Đăng nhập và Đăng ký
-     */
-    function switchTab(tab) {
-      hideAlert();
-      const loginForm = document.getElementById('login-form');
-      const registerForm = document.getElementById('register-form');
-      const loginBtn = document.getElementById('tab-login-btn');
-      const registerBtn = document.getElementById('tab-register-btn');
-
-      if (tab === 'login') {
-        loginForm.classList.add('active');
-        registerForm.classList.remove('active');
-        loginBtn.classList.add('active');
-        registerBtn.classList.remove('active');
-      } else {
-        registerForm.classList.add('active');
-        loginForm.classList.remove('active');
-        registerBtn.classList.add('active');
-        loginBtn.classList.remove('active');
-      }
-    }
-
-    /**
-     * Xử lý submit form Đăng nhập
-     */
-    function handleLogin(event) {
-      event.preventDefault();
-      hideAlert();
-
-      const usernameInput = document.getElementById('login-username').value.trim();
-      const passwordInput = document.getElementById('login-password').value.trim();
-
-      // Kiểm tra tài khoản trong danh sách
-      const foundUser = ACCOUNTS.find(
-        acc => acc.username === usernameInput && acc.password === passwordInput
-      );
-
-      if (foundUser) {
-        // Tạo đối tượng lưu session
-        const sessionData = {
-          isLoggedIn: true,
-          username: foundUser.username,
-          role: foundUser.role,
-          loginTime: Date.now()
-        };
-
-        // Lưu vào localStorage
-        localStorage.setItem('userSession', JSON.stringify(sessionData));
-
-        showAlert('success', 'Đăng nhập thành công! Đang chuyển hướng...');
-
-        // Chuyển hướng trang sau 1 giây
-        setTimeout(() => {
-          window.location.href = foundUser.redirect;
-        }, 1000);
-
-      } else {
-        showAlert('error', 'Tài khoản hoặc mật khẩu không chính xác!');
-      }
-    }
-
-    /**
-     * Xử lý submit form Đăng ký (Mô phỏng UI)
-     */
-    function handleRegister(event) {
-      event.preventDefault();
-      hideAlert();
-
-      const username = document.getElementById('reg-username').value.trim();
-      const password = document.getElementById('reg-password').value.trim();
-      const confirmPassword = document.getElementById('reg-confirm-password').value.trim();
-
-      if (password !== confirmPassword) {
-        showAlert('error', 'Mật khẩu xác nhận không khớp!');
-        return;
-      }
-
-      showAlert('success', 'Đăng ký thành công! Vui lòng đăng nhập với tài khoản hệ thống đã cấp.');
-      
-      // Chuyển về tab đăng nhập sau khi đăng ký thành công
-      setTimeout(() => {
-        document.getElementById('register-form').reset();
-        switchTab('login');
-      }, 1500);
-    }
-
-    /**
-     * Kiểm tra trạng thái Session hiện tại
-     * Nếu còn hạn -> Tự động chuyển hướng đến trang tương ứng
-     * Nếu hết hạn -> Tự động xóa session cũ
-     */
-    function checkExistingSession() {
-      const sessionRaw = localStorage.getItem('userSession');
-      if (!sessionRaw) return;
-
-      try {
-        const session = JSON.parse(sessionRaw);
-        const currentTime = Date.now();
-
-        // Kiểm tra hết hạn session
-        if (currentTime - session.loginTime > SESSION_TIMEOUT_MS) {
-          localStorage.removeItem('userSession');
-          showAlert('error', 'Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại!');
-          return;
-        }
-
-        // Nếu còn hạn -> Tự động chuyển hướng
-        if (session.isLoggedIn) {
-          if (session.role === 'admin') {
-            window.location.href = 'admin.html';
-          } else if (session.role === 'user') {
-            window.location.href = 'trangchu.html';
-          }
-        }
-      } catch (e) {
-        localStorage.removeItem('userSession');
-      }
-    }
-
-    /**
-     * Hiển thị thông báo trên giao diện
-     */
-    function showAlert(type, message) {
-      const alertBox = document.getElementById('alert-message');
-      alertBox.className = `alert-box ${type}`;
-      
-      const icon = type === 'error' 
-        ? '<i class="fa-solid fa-circle-exclamation"></i>' 
-        : '<i class="fa-solid fa-circle-check"></i>';
-
-      alertBox.innerHTML = `${icon} <span>${message}</span>`;
-    }
-
-    /**
-     * Ẩn thông báo
-     */
-    function hideAlert() {
-      const alertBox = document.getElementById('alert-message');
-      alertBox.className = 'alert-box';
-      alertBox.innerHTML = '';
-    }
-  </script>
-</body>
-</html>
