@@ -1,616 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login & Sign Up - VocabMaster</title>
-  
-  <!-- Google Fonts & Font Awesome Icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vocab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500&family=Playfair+Display:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
-    /* ==========================================
-       1. COLOR VARIABLES & GENERAL RESET
-       ========================================== */
     :root {
-      --primary-color: #C0392B;       /* Crimson / Maple Red */
-      --primary-hover: #A93226;       /* Darker Crimson */
-      --bg-gradient-start: #F9EBEA;   /* Soft maple tint light bg */
-      --bg-gradient-end: #FDEDEC;
-      --card-bg: #FFFFFF;
-      --text-dark: #2C3E50;
-      --text-muted: #7F8C8D;
-      --border-color: #E5E7E9;
-      --error-color: #E74C3C;
-      --success-color: #27AE60;
-      --border-radius: 16px;
-      --shadow: 0 10px 30px rgba(192, 57, 43, 0.12);
-      --transition: all 0.3s ease;
+      --ink: #0f1420;
+      --ink-soft: #171d2c;
+      --paper: #f2efe8;
+      --muted: #9aa0ae;
+      --gold: #c2a566;
+      --serif: "Playfair Display", "Times New Roman", serif;
+      --sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { height: 100%; }
 
     body {
-      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-      color: var(--text-dark);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      min-height: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ==========================================
-       2. LOGIN & SIGN UP CARD CONTAINER
-       ========================================== */
-    .auth-container {
-      background: var(--card-bg);
+    /* ---------- Header ---------- */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 420px;
-      padding: 40px 32px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border-color);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px clamp(20px, 5vw, 64px);
+      background: rgba(15, 20, 32, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(194, 165, 102, 0.18);
     }
 
-    .brand-header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .brand-header i {
-      font-size: 2.5rem;
-      color: var(--primary-color);
-      margin-bottom: 10px;
-    }
-
-    .brand-header h1 {
-      font-size: 1.8rem;
+    .logo {
+      font-family: var(--serif);
+      font-size: 1.6rem;
       font-weight: 700;
-      color: var(--primary-color);
-      letter-spacing: -0.5px;
+      letter-spacing: 0.02em;
+      color: var(--paper);
+      text-decoration: none;
     }
 
-    .brand-header p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* ==========================================
-       3. TAB SWITCHER
-       ========================================== */
-    .tab-group {
+    .nav {
       display: flex;
-      background-color: #F8F9F9;
-      padding: 4px;
-      border-radius: 10px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
+      gap: clamp(16px, 3vw, 40px);
+      list-style: none;
     }
 
-    .tab-btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: transparent;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 8px;
-      transition: var(--transition);
-    }
-
-    .tab-btn.active {
-      background: var(--card-bg);
-      color: var(--primary-color);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
-
-    /* ==========================================
-       4. FORM STYLES
-       ========================================== */
-    .auth-form {
-      display: none;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .auth-form.active {
-      display: flex;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-group label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-dark);
-    }
-
-    .input-wrapper {
+    .nav a {
       position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .input-wrapper i {
-      position: absolute;
-      left: 14px;
-      color: var(--text-muted);
-      font-size: 1rem;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 12px 14px 12px 42px;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
+      padding: 6px 0;
       font-size: 0.95rem;
-      outline: none;
-      transition: var(--transition);
-      background-color: #FAFAFA;
-    }
-
-    .form-input:focus {
-      border-color: var(--primary-color);
-      background-color: #FFFFFF;
-      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
-    }
-
-    /* ==========================================
-       5. NOTIFICATIONS & BUTTONS
-       ========================================== */
-    .message-box {
-      display: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
       font-weight: 500;
-      align-items: center;
-      gap: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
     }
 
-    .message-box.error {
-      display: flex;
-      background-color: #FDEDEC;
-      color: var(--error-color);
-      border: 1px solid #FADBD8;
-    }
-
-    .message-box.success {
-      display: flex;
-      background-color: #E8F8F5;
-      color: var(--success-color);
-      border: 1px solid #A3E4D7;
-    }
-
-    .btn-submit {
+    .nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
       width: 100%;
-      padding: 13px;
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      margin-top: 6px;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+
+    .nav a:hover,
+    .nav a[aria-current="page"] { color: var(--paper); }
+
+    .nav a:hover::after,
+    .nav a[aria-current="page"]::after { transform: scaleX(1); }
+
+    a:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      min-height: 100vh;
+      min-height: 100svh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
-    }
-
-    .btn-submit:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(192, 57, 43, 0.25);
-    }
-
-    /* ==========================================
-       6. FOOTER
-       ========================================== */
-    .footer {
-      margin-top: 24px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      justify-content: center;
       text-align: center;
+      padding: 110px 24px 56px;
+      background: radial-gradient(ellipse at 50% 35%, var(--ink-soft) 0%, var(--ink) 70%);
     }
 
-    /* Responsive adjustment for extra small screens */
-    @media (max-width: 480px) {
-      .auth-container {
-        padding: 30px 20px;
-      }
+    .hero h1 {
+      font-family: var(--serif);
+      font-weight: 800;
+      font-size: clamp(1.9rem, 5.4vw, 4.2rem);
+      line-height: 1.2;
+      letter-spacing: 0.015em;
+      max-width: 18ch;
+      color: var(--paper);
+      animation: rise 0.9s ease both;
+    }
+
+    .hero h1 span { display: block; }
+    .hero h1 span + span { color: var(--gold); }
+
+    .hero figure {
+      margin-top: clamp(28px, 5vh, 48px);
+      animation: rise 0.9s 0.15s ease both;
+    }
+
+    .hero img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: min(420px, 100%);
+      max-height: 42vh;
+      border-radius: 14px;
+      border: 1px solid rgba(194, 165, 102, 0.35);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 520px) {
+      .topbar { padding: 14px 16px; }
+      .logo { font-size: 1.35rem; }
+      .nav { gap: 14px; }
+      .nav a { font-size: 0.8rem; }
+      .hero img { max-height: 36vh; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero h1, .hero figure { animation: none; }
+      .nav a, .nav a::after { transition: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- AUTHENTICATION CARD CONTAINER -->
-  <div class="auth-container">
-    
-    <!-- BRAND LOGO & TITLE -->
-    <div class="brand-header">
-      <i class="fa-solid fa-graduation-cap"></i>
-      <h1>VocabMaster</h1>
-      <p>English Vocabulary Learning Portal</p>
-    </div>
+  <header class="topbar">
+    <a class="logo" href="index.html" aria-label="Vocab - Trang chủ">Vocab</a>
+    <nav aria-label="Điều hướng chính">
+      <ul class="nav">
+        <li><a href="index.html" aria-current="page">Trang Chủ</a></li>
+        <li><a href="tuvung.html">Lưu Từ Vựng</a></li>
+        <li><a href="luyentap.html">Luyện Tập</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <!-- TAB SWITCHER BUTTONS -->
-    <div class="tab-group">
-      <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
-      <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
-    </div>
+  <main class="hero">
+    <h1>
+      <span>THIÊN THƯỢNG THIÊN HẠ,</span>
+      <span>DUY NGÃ ĐỘC TÔN</span>
+    </h1>
+    <figure>
+      <img src="images.jpg" alt="Hình minh họa">
+    </figure>
+  </main>
 
-    <!-- NOTIFICATION BOX -->
-    <div id="message-box" class="message-box">
-      <i class="fa-solid fa-circle-exclamation" id="message-icon"></i>
-      <span id="message-text"></span>
-    </div>
-
-    <!-- SIGN IN FORM -->
-    <form id="form-signin" class="auth-form active" onsubmit="handleSignIn(event)">
-      <div class="form-group">
-        <label for="signin-username">Username</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-user"></i>
-          <input type="text" id="signin-username" class="form-input" placeholder="Enter your username" required autocomplete="username">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="signin-password">Password</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-lock"></i>
-          <input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
-        </div>
-      </div>
-
-      <button type="submit" class="btn-submit">
-        <i class="fa-solid fa-right-to-bracket"></i> Sign In
-      </button>
-    </form>
-
-    <!-- SIGN UP FORM (SIMULATION) -->
-    <form id="form-signup" class="auth-form" onsubmit="handleSignUp(event)">
-      <div class="form-group">
-        <label for="signup-username">Username</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-user-plus"></i>
-          <input type="text" id="signup-username" class="form-input" placeholder="Choose a username" required>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="signup-password">Password</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-lock"></i>
-          <input type="password" id="signup-password" class="form-input" placeholder="Create a password" required>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-submit">
-        <i class="fa-solid fa-user-check"></i> Create Account
-      </button>
-    </form>
-
-  </div>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    &copy; 2026 VocabMaster. All rights reserved.
-  </footer>
-
-  <!-- ==========================================
-     7. JAVASCRIPT LOGIC
-     ========================================== -->
-  <script>
-    // DOM Element References
-    const tabSignin = document.getElementById('tab-signin');
-    const tabSignup = document.getElementById('tab-signup');
-    const formSignin = document.getElementById('form-signin');
-    const formSignup = document.getElementById('formMã nguồn hoàn chỉnh cho file `index.html` tích hợp HTML, CSS và JavaScript trong cùng một file duy nhất, đáp ứng đúng các yêu cầu giao diện và logic đăng nhập:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VocabMaster - Sign In / Sign Up</title>
-  
-  <!-- Google Fonts & Font Awesome Icons -->
-  <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-  <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
-  <link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap)" rel="stylesheet">
-  <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
-
-  <style>
-    /* ==========================================
-       1. COLOR VARIABLES & GENERAL RESET
-       ========================================== */
-    :root {
-      --primary-color: #C0392B;       /* Maple Red / Crimson */
-      --primary-hover: #A93226;       /* Darker Crimson */
-      --bg-light: #F9EBEA;            /* Light maple tint background */
-      --card-bg: #FFFFFF;
-      --text-dark: #2C3E50;
-      --text-muted: #7F8C8D;
-      --border-color: #EAEDED;
-      --error-color: #E74C3C;
-      --success-color: #27AE60;
-      --shadow-md: 0 10px 30px rgba(192, 57, 43, 0.15);
-      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      --border-radius: 16px;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #FDEDEC 0%, #F9EBEA 100%);
-      color: var(--text-dark);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    /* ==========================================
-       2. AUTH CONTAINER & CARD DESIGN
-       ========================================== */
-    .auth-card {
-      background-color: var(--card-bg);
-      width: 100%;
-      max-width: 420px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-
-    .auth-header {
-      text-align: center;
-      padding: 35px 30px 20px;
-    }
-
-    .brand-logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      margin-bottom: 8px;
-    }
-
-    .auth-subtitle {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    /* ==========================================
-       3. TOGGLE TABS
-       ========================================== */
-    .auth-tabs {
-      display: flex;
-      background-color: #F4F6F6;
-      margin: 0 30px;
-      border-radius: 10px;
-      padding: 4px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 10px 0;
-      border: none;
-      background: transparent;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 8px;
-      transition: var(--transition);
-    }
-
-    .tab-btn.active {
-      background-color: var(--card-bg);
-      color: var(--primary-color);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
-
-    /* ==========================================
-       4. FORMS & INPUTS
-       ========================================== */
-    .auth-body {
-      padding: 25px 30px 35px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text-dark);
-    }
-
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .input-icon {
-      position: absolute;
-      left: 14px;
-      color: var(--text-muted);
-      font-size: 1rem;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 12px 14px 12px 42px;
-      border: 1.5px solid #D5D8DC;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      outline: none;
-      transition: var(--transition);
-      background-color: #FAFAFA;
-    }
-
-    .form-input:focus {
-      border-color: var(--primary-color);
-      background-color: #FFFFFF;
-      box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.1);
-    }
-
-    /* Message Alert */
-    .alert-message {
-      display: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      margin-bottom: 18px;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .alert-error {
-      background-color: #FDEDEC;
-      color: var(--error-color);
-      border: 1px solid #FADBD8;
-    }
-
-    .alert-success {
-      background-color: #EAFAF1;
-      color: var(--success-color);
-      border: 1px solid #D5F5E3;
-    }
-
-    /* Submit Button */
-    .btn-submit {
-      width: 100%;
-      padding: 12px;
-      background-color: var(--primary-color);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-submit:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    .auth-form {
-      display: none;
-    }
-
-    .auth-form.active {
-      display: block;
-    }
-
-    .footer-text {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-  </style>
-</head>
-<body>
-
-  <div class="auth-card">
-    
-    <!-- HEADER -->
-    <div class="auth-header">
-      <div class="brand-logo">
-        <i class="fa-solid fa-graduation-cap"></i> VocabMaster
-      </div>
-      <p class="auth-subtitle">Master English Vocabulary Effortlessly</p>
-    </div>
-
-    <!-- TABS SWITCH -->
-    <div class="auth-tabs">
-      <button id="tab-signin" class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
-      <button id="tab-signup" class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
-    </div>
-
-    <!-- BODY FORMS -->
-    <div class="auth-body">
-      
-      <!-- NOTIFICATION ALERT -->
-      <div id="alert-box" class="alert-message">
-        <i id="alert-icon" class="fa-solid"></i>
-        <span id="alert-text"></span>
-      </div>
-
-      <!-- SIGN IN FORM -->
-      <form id="signin-form" class="auth-form active" onsubmit="handleSignIn(event)">
-        <div class="form-group">
-          <label class="form-label" for="signin-username">Username</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-user input-icon"></i>
-            <input type="text" id="signin-username" class="form-input" placeholder="Enter your username" required autocomplete="username">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="signin-password">Password</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-lock input-icon"></i>
-            <input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
-          </div>
-        </div>
-
-        <button type="submit" class="btn-submit">
-          <span>Sign In</span> <i class="fa-solid fa-arrow-right"></i>
-        </button>
-      </form>
-
-      <!-- SIGN UP FORM -->
-      <form id="signup-form" class="auth-form" onsubmit="handleSignUp(event)">
-        <div class="form-group">
-          <label class="form-label" for="signup-username">Username</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-user input-icon"></i>
-            <input type="text" id="signup-username" class="form-input" placeholder="Choose a username" required>
-          </div>
-        </div>
-
-        <div class="form-group">
+</body>
+</html>
