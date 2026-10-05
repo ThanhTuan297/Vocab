@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practice Quiz - VocabMaster</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Authentication & Session Check (Runs immediately before rendering) -->
+  <script>
+    (function checkAuth() {
+      const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+      const sessionRaw = localStorage.getItem('userSession');
+
+      if (!sessionRaw) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        const session = JSON.parse(sessionRaw);
+        const isExpired = (Date.now() - session.loginTime) > SESSION_TIMEOUT_MS;
+
+        if (!session.isLoggedIn || isExpired) {
+          localStorage.removeItem('userSession');
+          window.location.href = 'index.html';
+        }
+      } catch (e) {
+        localStorage.removeItem('userSession');
+        window.location.href = 'index.html';
+      }
+    })();
+  </script>
+
+  <style>
+    /* ==========================================
+       1. COLOR VARIABLES & GENERAL RESET
+       ========================================== */
+    :root {
+      --primary-color: #C0392B;       /* Maple Red / Crimson */
+      --primary-hover: #A93226;       /* Darker Crimson */
+      --bg-light: #F9EBEA;            /* Soft Maple Light Red */
+      --card-bg: #FFFFFF;
+      --text-dark: #2C3E50;
+      --text-muted: #7F8C8D;
+      --correct-color: #27AE60;
+      --correct-bg: #EAFAF1;
+      --correct-border: #2ECC71;
+      --wrong-color: #C0392B;
+      --wrong-bg: #FDEDEC;
+      --wrong-border: #E74C3C;
+      --border-color: #EAEDED;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 8px 24px rgba(192, 57, 43, 0.12);
+      --transition: all 0.25s ease-in-out;
+      --border-radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================
+       2. NAVIGATION BAR
+       ========================================== */
+    .navbar {
+      background-color: var(--card-bg);
+      border-bottom: 2px solid var(--primary-color);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 70px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-item a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-item a:hover,
+    .nav-item a.active {
+      color: var(--primary-color);
+      background-color: #FDEDEC;
+    }
+
+    .btn-logout {
+      background-color: var(--primary-color);
+      color: white !important;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-logout:hover {
+      background-color: var(--primary-hover) !important;
+    }
+
+    /* ==========================================
+       3. MAIN CONTAINER & STATE VIEWS
+       ========================================== */
+    .main-container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 20px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .view-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      padding: 30px 35px;
+      border: 1px solid var(--border-color);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* General Button Styling */
+    .btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      box-shadow: 0 4px 12px rgba(192, 57, 43, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: #F2F4F4;
+      color: var(--text-dark);
+    }
+
+    .btn-secondary:hover {
+      background-color: #E5E7E9;
+    }
+
+    /* ==========================================
+       4. EMPTY STATE VIEW
+       ========================================== */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+
+    .empty-state h2 {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      margin-bottom: 25px;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    /* ==========================================
+       5. QUIZ VIEW (PROGRESS & QUESTION CARD)
+       ========================================== */
+    .quiz-header {
+      margin-bottom: 25px;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    .progress-info {
+      color: var(--text-dark);
+    }
+
+    .score-info {
+      display: flex;
+      gap: 15px;
+    }
+
+    .score-correct { color: var(--correct-color); }
+    .score-wrong { color: var(--wrong-color); }
+
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background-color: #F2F4F4;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: var(--primary-color);
+      transition: width 0.3s ease;
+      border-radius: 20px;
+    }
+
+    .question-card {
+      text-align: center;
+      padding: 25px 0 15px;
+    }
+
+    .word-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .question-word {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      word-break: break-word;
+    }
+
+    /* Answers Grid */
+    .answers-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .answer-btn {
+      padding: 16px 20px;
+      background-color: #FAFAFA;
+      border: 2px solid #E5E7E9;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .answer-btn .prefix {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background-color: #E5E7E9;
+      font-size: 0.85rem;
+      color: var(--text-dark);
+      flex-shrink: 0;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      border-color: var(--primary-color);
+      background-color: #FDEDEC;
+    }
+
+    .answer-btn:hover:not(:disabled) .prefix {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    /* Answer States */
+    .answer-btn.correct {
+      background-color: var(--correct-bg) !important;
+      border-color: var(--correct-border) !important;
+      color: var(--correct-color) !important;
+    }
+
+    .answer-btn.correct .prefix {
+      background-color: var(--correct-color) !important;
+      color: white !important;
+    }
+
+    .answer-btn.wrong {
+      background-color: var(--wrong-bg) !important;
+      border-color: var(--wrong-border) !important;
+      color: var(--wrong-color) !important;
+    }
+
+    .answer-btn.wrong .prefix {
+      background-color: var(--wrong-color) !important;
+      color: white !important;
+    }
+
+    /* Feedback Banner & Footer */
+    .quiz-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 50px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+    }
+
+    .feedback-msg {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feedback-msg.correct-text { color: var(--correct-color); }
+    .feedback-msg.wrong-text { color: var(--wrong-color); }
+
+    /* ==========================================
+       6. RESULT VIEW
+       ========================================== */
+    .result-view {
+      text-align: center;
+    }
+
+    .result-header {
+      margin-bottom: 30px;
+    }
+
+    .result-header i {
+      font-size: 3.5rem;
+      color: var(--primary-color);
+      margin-bottom: 12px;
+    }
+
+    .result-header h2 {
+      font-size: 1.8rem;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    /* Stats Grid */
+    .result-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background-color: #FAFAFA;
+      border: 1px solid var(--border-color);
+      padding: 18px 10px;
+      border-radius: 12px;
+    }
+
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-card .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .stat-accuracy { color: var(--primary-color); }
+    .stat-correct { color: var(--correct-color); }
+    .stat-wrong { color: var(--wrong-color); }
+
+    /* Review List */
+    .review-section {
+      text-align: left;
+      margin-bottom: 30px;
+    }
+
+    .review-section h3 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .review-list {
+      list-style: none;
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+    }
+
+    .review-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+
+    .review-item:last-child {
+      border-bottom: none;
+    }
+
+    .review-item .word {
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .review-item .meaning {
+      color: var(--text-muted);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .result-actions .btn {
+      flex: 1;
+    }
+
+    /* ==========================================
+       7. FOOTER & RESPONSIVE
+       ========================================== */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: auto;
+    }
+
+    @media (max-width: 600px) {
+      .navbar { padding: 0 1rem; }
+      .nav-links span { display: none; }
+      .view-card { padding: 25px 20px; }
+      .answers-grid { grid-template-columns: 1fr; }
+      .result-stats-grid { grid-template-columns: 1fr; }
+      .result-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="trangchu.html" class="brand-logo">
+        <i class="fa-solid fa-graduation-cap"></i> VocabMaster
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item">
+          <a href="trangchu.html"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+        </li>
+        <li class="nav-item">
+          <a href="tuvung.html"><i class="fa-solid fa-book"></i> <span>Vocabulary</span></a>
+        </li>
+        <li class="nav-item">
+          <a href="luyentap.html" class="active"><i class="fa-solid fa-dumbbell"></i> <span>Practice</span></a>
+        </li>
+        <li class="nav-item">
+          <a href="#" onclick="logout()" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="main-container">
+
+    <!-- VIEW 1: EMPTY STATE -->
+    <div id="view-empty" class="view-card empty-state hidden">
+      <i class="fa-solid fa-folder-open"></i>
+      <h2>No Vocabulary Selected</h2>
+      <p>No vocabulary selected for practice. Please return to the Vocabulary page and select words to practice.</p>
+      <a href="tuvung.html" class="btn btn-primary">
+        <i class="fa-solid fa-arrow-left"></i> Go to Vocabulary Page
+      </a>
+    </div>
+
+    <!-- VIEW 2: QUIZ INTERFACE -->
+    <div id="view-quiz" class="view-card hidden">
+      <div class="quiz-header">
+        <div class="stats-bar">
+          <span class="progress-info">
+            Question <span id="current-q-num">1</span>/<span id="total-q-num">10</span>
+          </span>
+          <div class="score-info">
+            <span class="score-correct"><i class="fa-solid fa-circle-check"></i> Correct: <span id="score-correct-count">0</span></span>
+            <span class="score-wrong"><i class="fa-solid fa-circle-xmark"></i> Wrong: <span id="score-wrong-count">0</span></span>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div id="quiz-progress-bar" class="progress-bar"></div>
+        </div>
+      </div>
+
+      <div class="question-card">
+        <div class="word-label">Translate this word</div>
+        <div id="question-word" class="question-word">Loading...</div>
+
+        <div id="answers-container" class="answers-grid">
+          <!-- Answer buttons injected dynamically by JS -->
+        </div>
+      </div>
+
+      <div class="quiz-footer">
+        <div id="feedback-msg" class="feedback-msg"></div>
+        <button id="btn-next" class="btn btn-primary hidden" onclick="nextQuestion()">
+          Continue <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 3: QUIZ RESULT -->
+    <div id="view-result" class="view-card result-view hidden">
+      <div class="result-header">
+        <i class="fa-solid fa-trophy"></i>
+        <h2>Practice Completed!</h2>
+        <p style="color: var(--text-muted);">Great job on completing your vocabulary session.</p>
+      </div>
+
+      <div class="result-stats-grid">
+        <div class="stat-card">
+          <div id="res-accuracy" class="value stat-accuracy">0%</div>
+          <div class="label">Accuracy</div>
+        </div>
+        <div class="stat-card">
+          <div id="res-correct" class="value stat-correct">0</div>
+          <div class="label">Correct</div>
+        </div>
+        <div class="stat-card">
+          <div id="res-wrong" class="value stat-wrong">0</div>
+          <div class="label">Incorrect</div>
+        </div>
+      </div>
+
+      <!-- Incorrect Words Review Section -->
+      <div id="review-section" class="review-section hidden">
+        <h3><i class="fa-solid fa-circle-exclamation" style="color: var(--primary-color);"></i> Words to Review</h3>
+        <ul id="review-list" class="review-list">
+          <!-- Injected dynamically -->
+        </ul>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn btn-secondary" onclick="restartQuiz()">
+          <i class="fa-solid fa-rotate-right"></i> Retry This Set
+        </button>
+        <a href="tuvung.html" class="btn btn-primary">
+          <i class="fa-solid fa-list-check"></i> Select Other Words
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    &copy; 2026 VocabMaster, T.T
+  </footer>
+
+  <!-- ==========================================
+     8. JAVASCRIPT LOGIC & QUIZ ENGINE
+     ========================================== -->
+  <script>
+    // --- FALLBACK DISTRACTOR BANK (Guarantees 4 options if user selects < 4 words) ---
+    const FALLBACK_DISTRACTORS = [
+      "Thành công", "Kiên trì", "Khám phá", "Cơ hội", "Sáng tạo", 
+      "Phát triển", "Thách thức", "Mục tiêu", "Động lực", "Thói quen", 
+      "Tập trung", "Thành tựu", "Cải thiện", "Tri thức", "Kinh nghiệm"
+    ];
+
+    // State Variables
+    let practiceWords = [];
+    let currentQuestionIndex = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let wrongWordsList = [];
+    let isAnswered = false;
+    let isInternalNavigation = false;
+
+    // DOM Elements
+    const viewEmpty = document.getElementById('view-empty');
+    const viewQuiz = document.getElementById('view-quiz');
+    const viewResult = document.getElementById('view-result');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initQuiz();
+    });
+
+    /**
+     * Initialize Quiz: Load data from sessionStorage and setup view
+     */
+    function initQuiz() {
+      const storedData = sessionStorage.getItem('practice_words');
+
+      if (!storedData) {
+        showView(viewEmpty);
+        return;
+      }
+
+      try {
+        practiceWords = JSON.parse(storedData);
+        if (!Array.isArray(practiceWords) || practiceWords.length === 0) {
+          showView(viewEmpty);
+          return;
+        }
+
+        // Shuffle question sequence at start
+        shuffleArray(practiceWords);
+        
+        // Reset Quiz metrics
+        currentQuestionIndex = 0;
+        correctCount = 0;
+        wrongCount = 0;
+        wrongWordsList = [];
+
+        showView(viewQuiz);
+        loadQuestion();
+      } catch (e) {
+        console.error("Error parsing practice words:", e);
+        showView(viewEmpty);
+      }
+    }
+
+    /**
+     * Helper to toggle views cleanly
+     */
+    function showView(targetView) {
+      viewEmpty.classList.add('hidden');
+      viewQuiz.classList.add('hidden');
+      viewResult.classList.add('hidden');
+
+      targetView.classList.remove('hidden');
+    }
+
+    /**
+     * Render current question card and generate 4 multiple-choice options
+     */
+    function loadQuestion() {
+      isAnswered = false;
+      document.getElementById('feedback-msg').innerHTML = '';
+      document.getElementById('feedback-msg').className = 'feedback-msg';
+      document.getElementById('btn-next').classList.add('hidden');
+
+      const currentItem = practiceWords[currentQuestionIndex];
+
+      // Update UI Progress Info
+      const total = practiceWords.length;
+      document.getElementById('current-q-num').textContent = currentQuestionIndex + 1;
+      document.getElementById('total-q-num').textContent = total;
+      document.getElementById('score-correct-count').textContent = correctCount;
+      document.getElementById('score-wrong-count').textContent = wrongCount;
+
+      const progressPercent = ((currentQuestionIndex) / total) * 100;
+      document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+
+      // Set target word
+      document.getElementById('question-word').textContent = currentItem.word;
+
+      // --- DISTRACTOR GENERATION ALGORITHM ---
+      // 1. Correct meaning
+      const options = [currentItem.meaning];
+
+      // 2. Collect other meanings from current practice dataset
+      const otherMeaningsInSet = practiceWords
+        .filter(item => item.meaning !== currentItem.meaning)
+        .map(item => item.meaning);
+      
+      shuffleArray(otherMeaningsInSet);
+
+      // Add options from current set
+      for (let m of otherMeaningsInSet) {
+        if (options.length < 4 && !options.includes(m)) {
+          options.push(m);
+        }
+      }
+
+      // 3. If options < 4, top up from FALLBACK_DISTRACTORS
+      if (options.length < 4) {
+        const fallbacksCopy = [...FALLBACK_DISTRACTORS];
+        shuffleArray(fallbacksCopy);
+
+        for (let f of fallbacksCopy) {
+          if (options.length < 4 && !options.includes(f)) {
+            options.push(f);
+          }
+        }
+      }
+
+      // 4. Shuffle final 4 options
+      shuffleArray(options);
+
+      // Render Answer Buttons
+      const answersContainer = document.getElementById('answers-container');
+      answersContainer.innerHTML = '';
+
+      const prefixes = ['A', 'B', 'C', 'D'];
+      options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.innerHTML = `<span class="prefix">${prefixes[idx]}</span> <span class="opt-text">${escapeHtml(optText)}</span>`;
+        btn.onclick = () => handleAnswerSelect(btn, optText, currentItem.meaning, currentItem);
+        answersContainer.appendChild(btn);
+      });
+    }
+
+    /**
+     * Answer Selection & Evaluation Handler
+     */
+    function handleAnswerSelect(selectedBtn, selectedText, correctMeaning, currentItem) {
+      if (isAnswered) return; // Prevent multiple clicks
+      isAnswered = true;
+
+      const allBtns = document.querySelectorAll('.answer-btn');
+      const feedbackMsg = document.getElementById('feedback-msg');
+
+      // Disable all options
+      allBtns.forEach(btn => btn.disabled = true);
+
+      if (selectedText === correctMeaning) {
+        // CORRECT ANSWER
+        correctCount++;
+        selectedBtn.classList.add('correct');
+        feedbackMsg.className = 'feedback-msg correct-text';
+        feedbackMsg.innerHTML = `<i class="fa-solid fa-circle-check"></i> Excellent! That is correct.`;
+      } else {
+        // INCORRECT ANSWER
+        wrongCount++;
+        selectedBtn.classList.add('wrong');
+        
+        // Track for review
+        wrongWordsList.push(currentItem);
+
+        // Highlight correct option
+        allBtns.forEach(btn => {
+          const textSpan = btn.querySelector('.opt-text');
+          if (textSpan && textSpan.textContent.trim() === correctMeaning) {
+            btn.classList.add('correct');
+          }
+        });
+
+        feedbackMsg.className = 'feedback-msg wrong-text';
+        feedbackMsg.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Incorrect! Correct answer: <strong>${escapeHtml(correctMeaning)}</strong>`;
+      }
+
+      // Update counters & progress
+      document.getElementById('score-correct-count').textContent = correctCount;
+      document.getElementById('score-wrong-count').textContent = wrongCount;
+
+      // Show Continue Button
+      document.getElementById('btn-next').classList.remove('hidden');
+    }
+
+    /**
+     * Advance to next question or complete quiz
+     */
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < practiceWords.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    /**
+     * Calculate final statistics and render Results View
+     */
+    function showResults() {
+      // Set progress bar to 100%
+      document.getElementById('quiz-progress-bar').style.width = '100%';
+
+      const total = practiceWords.length;
+      const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+      document.getElementById('res-accuracy').textContent = `${accuracy}%`;
+      document.getElementById('res-correct').textContent = correctCount;
+      document.getElementById('res-wrong').textContent = wrongCount;
+
+      // Populate Incorrect Words Review List
+      const reviewSection = document.getElementById('review-section');
+      const reviewList = document.getElementById('review-list');
+      reviewList.innerHTML = '';
+
+      if (wrongWordsList.length > 0) {
+        wrongWordsList.forEach(item => {
+          const li = document.createElement('li');
+          li.className = 'review-item';
+          li.innerHTML = `
+            <span class="word">${escapeHtml(item.word)}</span>
+            <span class="meaning">${escapeHtml(item.meaning)}</span>
+          `;
+          reviewList.appendChild(li);
+        });
+        reviewSection.classList.remove('hidden');
+      } else {
+        reviewSection.classList.add('hidden');
+      }
+
+      showView(viewResult);
+    }
+
+    /**
+     * Restart current quiz set
+     */
+    function restartQuiz() {
+      shuffleArray(practiceWords);
+      currentQuestionIndex = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      wrongWordsList = [];
+
+      showView(viewQuiz);
+      loadQuestion();
+    }
+
+    /**
+     * Utility: Fisher-Yates Array Shuffle Algorithm
+     */
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    /**
+     * Utility: Escape HTML characters
+     */
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    /**
+     * Logout Handler
+     */
+    function logout() {
+      isInternalNavigation = true;
+      localStorage.removeItem('userSession');
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    /**
+     * Intercept internal link clicks to protect session data during internal navigation
+     */
+    document.addEventListener('click', (e) => {
+      const anchor = e.target.closest('a');
+      if (anchor && anchor.getAttribute('href') && !anchor.getAttribute('href').startsWith('#')) {
+        isInternalNavigation = true;
+      }
+    });
+
+    /**
+     * SESSION CLEANUP: Clear practice temporary data if browser tab/app is closed
+     */
+    window.addEventListener('beforeunload', () => {
+      if (!isInternalNavigation) {
+        sessionStorage.removeItem('practice_words');
+      }
+    });
+  </script>
+</body>
+</html>
