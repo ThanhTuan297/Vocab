@@ -1,624 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vocabulary Management - VocabMaster</title>
-  
-  <!-- Google Fonts & Font Awesome Icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vocab - Lưu Từ Vựng</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* ==========================================
-       1. COLOR VARIABLES & GENERAL RESET
-       ========================================== */
     :root {
-      --primary-color: #C0392B;       /* Maple Red / Crimson */
-      --primary-hover: #A93226;       /* Darker Crimson */
-      --bg-light: #FDFEFE;
-      --card-bg: #FFFFFF;
-      --text-dark: #2C3E50;
-      --text-muted: #7F8C8D;
-      --border-color: #EAEDED;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 8px 24px rgba(192, 57, 43, 0.12);
-      --transition: all 0.25s ease-in-out;
-      --border-radius: 12px;
+      --ink: #0f1420;
+      --ink-soft: #171d2c;
+      --line: rgba(194, 165, 102, 0.18);
+      --paper: #f2efe8;
+      --muted: #9aa0ae;
+      --gold: #c2a566;
+      --danger: #d9776b;
+      --serif: "Playfair Display", "Times New Roman", serif;
+      --sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
     }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: var(--ink); color: var(--paper); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+    a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+    /* ---------- Header ---------- */
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px clamp(16px, 5vw, 64px);
+      background: rgba(15, 20, 32, 0.9);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
     }
-
-    body {
-      background-color: #F9EBEA; /* Light maple tint background */
-      color: var(--text-dark);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    .logo { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; letter-spacing: 0.06em; color: var(--paper); text-decoration: none; }
+    .nav { display: flex; gap: clamp(4px, 1.5vw, 14px); list-style: none; }
+    .nav a, .nav button {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px; border: 0; background: none; cursor: pointer;
+      font: 500 0.9rem var(--sans); color: var(--muted); text-decoration: none;
+      transition: color 0.2s, background 0.2s;
     }
+    .nav a:hover, .nav button:hover, .nav a[aria-current="page"] { color: var(--paper); background: rgba(194, 165, 102, 0.12); }
+    .nav a[aria-current="page"] { color: var(--gold); }
+    svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* ==========================================
-       2. NAVIGATION BAR
-       ========================================== */
-    .navbar {
-      background-color: var(--card-bg);
-      border-bottom: 2px solid var(--primary-color);
-      box-shadow: var(--shadow-sm);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 0 2rem;
-    }
+    /* ---------- Layout ---------- */
+    main { max-width: 960px; margin: 0 auto; padding: 36px clamp(16px, 4vw, 32px) 80px; }
+    h1 { font-family: var(--serif); font-size: clamp(1.5rem, 3.5vw, 2rem); margin-bottom: 20px; }
 
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      height: 70px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      list-style: none;
-    }
-
-    .nav-item a {
-      text-decoration: none;
-      color: var(--text-dark);
-      font-weight: 600;
-      font-size: 0.95rem;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-item a:hover,
-    .nav-item a.active {
-      color: var(--primary-color);
-      background-color: #FDEDEC;
-    }
-
-    .btn-logout {
-      background-color: var(--primary-color);
-      color: white !important;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-logout:hover {
-      background-color: var(--primary-hover) !important;
-    }
-
-    /* ==========================================
-       3. MAIN CONTENT CONTAINER
-       ========================================== */
-    .main-container {
-      max-width: 1200px;
-      margin: 30px auto;
-      padding: 0 20px;
-      width: 100%;
-      flex: 1;
-    }
-
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 25px;
-      background: var(--card-bg);
-      padding: 20px 25px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .page-title h1 {
-      font-size: 1.6rem;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .page-title p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .action-controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
     .btn {
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: var(--transition);
+      padding: 10px 18px; border-radius: 8px; cursor: pointer;
+      font: 500 0.9rem var(--sans); border: 1px solid var(--line);
+      background: var(--ink-soft); color: var(--paper);
+      transition: border-color 0.2s, background 0.2s, opacity 0.2s;
     }
+    .btn:hover { border-color: var(--gold); }
+    .btn-primary { margin-left: auto; background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 600; }
+    .btn-primary:hover { background: #d3b877; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn:disabled:hover { border-color: var(--line); }
+    .btn-primary:disabled:hover { background: var(--gold); border-color: var(--gold); }
 
-    .btn-secondary {
-      background-color: #F2F4F4;
-      color: var(--text-dark);
+    /* ---------- Table ---------- */
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--ink-soft); }
+    table { width: 100%; border-collapse: collapse; min-width: 560px; }
+    th { padding: 14px 12px; text-align: left; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); border-bottom: 1px solid var(--line); }
+    td { padding: 6px 12px; border-bottom: 1px solid rgba(194, 165, 102, 0.08); vertical-align: middle; }
+    tr:last-child td { border-bottom: 0; }
+    .col-idx { width: 56px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .col-chk, .col-act { width: 96px; text-align: center; }
+    th.col-chk, th.col-act { text-align: center; }
+
+    td input[type="text"] {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid transparent; background: transparent;
+      font: 400 0.95rem var(--sans); color: var(--paper);
+      transition: border-color 0.2s, background 0.2s;
     }
+    td input[type="text"]::placeholder { color: #626a7a; }
+    td input[type="text"]:hover { border-color: var(--line); }
+    td input[type="text"]:focus { outline: none; border-color: var(--gold); background: var(--ink); }
 
-    .btn-secondary:hover {
-      background-color: #E5E7E9;
-    }
+    input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; }
+    input[type="checkbox"]:disabled { opacity: 0.3; cursor: not-allowed; }
 
-    .btn-primary {
-      background-color: var(--primary-color);
-      color: white;
-      box-shadow: var(--shadow-md);
-    }
+    .del { padding: 8px; border: 0; border-radius: 8px; background: none; color: var(--muted); cursor: pointer; transition: color 0.2s, background 0.2s; }
+    .del:hover { color: var(--danger); background: rgba(217, 119, 107, 0.12); }
 
-    .btn-primary:hover:not(:disabled) {
-      background-color: var(--primary-hover);
-      transform: translateY(-2px);
-    }
-
-    .btn-primary:disabled {
-      background-color: #E6B0AA;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    /* ==========================================
-       4. DYNAMIC VOCABULARY TABLE
-       ========================================== */
-    .table-card {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-    }
-
-    .vocab-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    .vocab-table th {
-      background-color: #FDEDEC;
-      color: var(--primary-color);
-      padding: 14px 16px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--border-color);
-    }
-
-    .vocab-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border-color);
-      vertical-align: middle;
-    }
-
-    .vocab-table tbody tr:hover {
-      background-color: #FEF9E7;
-    }
-
-    .col-stt { width: 60px; text-align: center; font-weight: 600; color: var(--text-muted); }
-    .col-word { width: 38%; }
-    .col-meaning { width: 38%; }
-    .col-practice { width: 100px; text-align: center; }
-    .col-action { width: 80px; text-align: center; }
-
-    .table-input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #D5D8DC;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      outline: none;
-      transition: var(--transition);
-      background-color: #FAFAFA;
-    }
-
-    .table-input:focus {
-      border-color: var(--primary-color);
-      background-color: #FFFFFF;
-      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
-    }
-
-    .checkbox-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .checkbox-wrapper input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--primary-color);
-      cursor: pointer;
-    }
-
-    .btn-delete {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 6px;
-      transition: var(--transition);
-    }
-
-    .btn-delete:hover {
-      color: var(--primary-color);
-      background-color: #FDEDEC;
-    }
-
-    /* ==========================================
-       5. FOOTER
-       ========================================== */
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: auto;
-    }
-
-    /* Responsive adjustment for Mobile */
-    @media (max-width: 768px) {
-      .navbar { padding: 0 1rem; }
-      .nav-links span { display: none; }
-      .page-header { flex-direction: column; align-items: flex-start; }
-      .action-controls { width: 100%; justify-content: space-between; }
-      .btn { flex: 1; justify-content: center; }
+    @media (max-width: 640px) {
+      .nav span { display: none; }
+      .nav a, .nav button { padding: 9px; }
+      .btn-primary { margin-left: 0; width: 100%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAVIGATION BAR -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="trangchu.html" class="brand-logo">
-        <i class="fa-solid fa-graduation-cap"></i> VocabMaster
-      </a>
-      <ul class="nav-links">
-        <li class="nav-item">
-          <a href="trangchu.html"><i class="fa-solid fa-house"></i> <span>Home</span></a>
-        </li>
-        <li class="nav-item">
-          <a href="tuvung.html" class="active"><i class="fa-solid fa-book"></i> <span>Vocabulary</span></a>
-        </li>
-        <li class="nav-item">
-          <a href="luyentap.html"><i class="fa-solid fa-dumbbell"></i> <span>Practice</span></a>
-        </li>
-        <li class="nav-item">
-          <a href="#" onclick="logout()" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
-        </li>
+  <header class="topbar">
+    <a class="logo" href="index.html" aria-label="VOCAB - Trang chủ">VOCAB</a>
+    <nav aria-label="Điều hướng chính">
+      <ul class="nav">
+        <li><a href="index.html" title="Trang chủ">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Trang chủ</span></a></li>
+        <li><a href="tuvung.html" aria-current="page" title="Danh sách từ vựng">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span>Từ vựng</span></a></li>
+        <li><a href="luyentap.html" title="Luyện tập">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span>Luyện tập</span></a></li>
+        <li><button type="button" id="logout" title="Đăng xuất">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>Đăng xuất</span></button></li>
       </ul>
-    </div>
-  </nav>
+    </nav>
+  </header>
 
-  <!-- MAIN CONTENT CONTAINER -->
-  <main class="main-container">
-    
-    <!-- PAGE HEADER & ACTION CONTROLS -->
-    <div class="page-header">
-      <div class="page-title">
-        <h1><i class="fa-solid fa-list-check"></i> Vocabulary Management</h1>
-        <p>Type your vocabulary below. New rows are added automatically as you write!</p>
-      </div>
+  <main>
+    <h1>Danh sách từ vựng</h1>
 
-      <div class="action-controls">
-        <button class="btn btn-secondary" onclick="toggleSelectAll(true)">
-          <i class="fa-solid fa-square-check"></i> Select All
-        </button>
-        <button class="btn btn-secondary" onclick="toggleSelectAll(false)">
-          <i class="fa-solid fa-square"></i> Deselect All
-        </button>
-        <button id="btn-practice" class="btn btn-primary" onclick="startPractice()" disabled>
-          <i class="fa-solid fa-play"></i> Start Practice (<span id="selected-count">0</span>)
-        </button>
-      </div>
+    <div class="toolbar">
+      <button type="button" class="btn" id="selectAll">Select All</button>
+      <button type="button" class="btn" id="deselectAll">Deselect All</button>
+      <button type="button" class="btn btn-primary" id="startPractice" disabled>Start Practice (0)</button>
     </div>
 
-    <!-- DYNAMIC VOCABULARY TABLE CARD -->
-    <div class="table-card">
-      <div class="table-wrapper">
-        <table class="vocab-table">
-          <thead>
-            <tr>
-              <th class="col-stt">#</th>
-              <th class="col-word">English Word</th>
-              <th class="col-meaning">Meaning</th>
-              <th class="col-practice">Practice</th>
-              <th class="col-action">Action</th>
-            </tr>
-          </thead>
-          <tbody id="vocab-tbody">
-            <!-- Dynamic rows will be inserted here by JavaScript -->
-          </tbody>
-        </table>
-      </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-idx">#</th>
+            <th>ENGLISH WORD</th>
+            <th>MEANING</th>
+            <th class="col-chk">PRACTICE</th>
+            <th class="col-act">ACTION</th>
+          </tr>
+        </thead>
+        <tbody id="vocabBody"></tbody>
+      </table>
     </div>
-
   </main>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    &copy; 2026 VocabMaster. All rights reserved.
-  </footer>
-
-  <!-- ==========================================
-     6. JAVASCRIPT LOGIC
-     ========================================== -->
   <script>
-    const STORAGE_KEY = 'vocab_list_session';
-    const tbody = document.getElementById('vocab-tbody');
-    const btnPractice = document.getElementById('btn-practice');
-    const selectedCountSpan = document.getElementById('selected-count');
+    const STORE_KEY = "vocab_words";       // localStorage: toàn bộ từ vựng
+    const PRACTICE_KEY = "vocab_practice"; // sessionStorage: từ được chọn luyện tập
 
-    /**
-     * Initialize page content on load
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-      loadSessionData();
-      updatePracticeButtonState();
+    const body = document.getElementById("vocabBody");
+    const startBtn = document.getElementById("startPractice");
+    let nextId = 1;
+    let rows = []; // { id, word, meaning, checked }
+
+    const isEmpty = r => !r.word.trim() && !r.meaning.trim();
+    const isComplete = r => !!(r.word.trim() && r.meaning.trim());
+    const newRow = (word = "", meaning = "") => ({ id: nextId++, word, meaning, checked: false });
+
+    function save() {
+      try {
+        const data = rows.filter(r => !isEmpty(r)).map(r => ({ word: r.word, meaning: r.meaning }));
+        localStorage.setItem(STORE_KEY, JSON.stringify(data));
+      } catch (e) { console.error("Không thể lưu dữ liệu:", e); }
+    }
+
+    function load() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORE_KEY) || "[]");
+        if (Array.isArray(data)) rows = data.map(d => newRow(String(d.word || ""), String(d.meaning || "")));
+      } catch (e) { rows = []; }
+      rows.push(newRow());
+    }
+
+    function updateCount() {
+      const n = rows.filter(r => r.checked && isComplete(r)).length;
+      startBtn.textContent = "Start Practice (" + n + ")";
+      startBtn.disabled = n === 0;
+    }
+
+    function buildRow(r) {
+      const tr = document.createElement("tr");
+      tr.dataset.id = r.id;
+
+      const idx = document.createElement("td");
+      idx.className = "col-idx";
+
+      const chkTd = document.createElement("td");
+      chkTd.className = "col-chk";
+      const chk = document.createElement("input");
+      chk.type = "checkbox";
+      chk.checked = r.checked;
+      chk.disabled = !isComplete(r);
+      chk.setAttribute("aria-label", "Chọn để luyện tập");
+      chk.addEventListener("change", () => { r.checked = chk.checked; updateCount(); });
+      chkTd.appendChild(chk);
+
+      const mkInput = (field, placeholder, label) => {
+        const td = document.createElement("td");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = r[field];
+        input.placeholder = placeholder;
+        input.setAttribute("aria-label", label);
+        input.autocomplete = "off";
+        input.addEventListener("input", () => {
+          r[field] = input.value;
+          chk.disabled = !isComplete(r);
+          if (chk.disabled) { r.checked = false; chk.checked = false; }
+          // Gõ vào hàng trống cuối cùng -> tự thêm hàng trống mới bên dưới
+          if (r === rows[rows.length - 1] && !isEmpty(r)) {
+            const fresh = newRow();
+            rows.push(fresh);
+            body.appendChild(buildRow(fresh));
+            renumber();
+          }
+          save();
+          updateCount();
+        });
+        td.appendChild(input);
+        return td;
+      };
+
+      const wordTd = mkInput("word", "e.g. Apple", "English word");
+      const meaningTd = mkInput("meaning", "e.g. Quả táo", "Meaning");
+
+      const actTd = document.createElement("td");
+      actTd.className = "col-act";
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "del";
+      del.title = "Xóa";
+      del.setAttribute("aria-label", "Xóa từ vựng");
+      del.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+      del.addEventListener("click", () => {
+        rows = rows.filter(x => x !== r);
+        if (!rows.length || !isEmpty(rows[rows.length - 1])) rows.push(newRow());
+        save();
+        render();
+      });
+      actTd.appendChild(del);
+
+      tr.append(idx, wordTd, meaningTd, chkTd, actTd);
+      return tr;
+    }
+
+    function renumber() {
+      body.querySelectorAll("tr").forEach((tr, i) => { tr.firstElementChild.textContent = i + 1; });
+    }
+
+    function render() {
+      body.replaceChildren(...rows.map(buildRow));
+      renumber();
+      updateCount();
+    }
+
+    document.getElementById("selectAll").addEventListener("click", () => {
+      rows.forEach(r => { r.checked = isComplete(r); });
+      render();
     });
 
-    /**
-     * Load existing vocabulary from sessionStorage or create an initial row
-     */
-    function loadSessionData() {
-      const savedData = sessionStorage.getItem(STORAGE_KEY);
-      if (savedData) {
-        try {
-          const words = JSON.parse(savedData);
-          if (words.length > 0) {
-            words.forEach(item => addRow(item.word, item.meaning, item.selected));
-            // Ensure there's always one empty row at the bottom for new entry
-            addRow();
-            updateRowNumbers();
-            return;
-          }
-        } catch (e) {
-          console.error("Error reading vocabulary session", e);
-        }
-      }
-      // Default: create initial empty row
-      addRow();
-    }
+    document.getElementById("deselectAll").addEventListener("click", () => {
+      rows.forEach(r => { r.checked = false; });
+      render();
+    });
 
-    /**
-     * Dynamically create a new table row
-     */
-    function addRow(word = '', meaning = '', selected = true) {
-      const tr = document.createElement('tr');
+    startBtn.addEventListener("click", () => {
+      const chosen = rows.filter(r => r.checked && isComplete(r)).map(r => ({ word: r.word.trim(), meaning: r.meaning.trim() }));
+      if (!chosen.length) return;
+      try { sessionStorage.setItem(PRACTICE_KEY, JSON.stringify(chosen)); } catch (e) { console.error(e); }
+      window.location.href = "luyentap.html";
+    });
 
-      tr.innerHTML = `
-        <td class="col-stt"></td>
-        <td class="col-word">
-          <input type="text" class="table-input input-word" placeholder="e.g. Apple" value="${escapeHtml(word)}" oninput="handleInput(this)">
-        </td>
-        <td class="col-meaning">
-          <input type="text" class="table-input input-meaning" placeholder="e.g. Quả táo" value="${escapeHtml(meaning)}" oninput="handleInput(this)">
-        </td>
-        <td class="col-practice">
-          <div class="checkbox-wrapper">
-            <input type="checkbox" class="chk-practice" ${selected ? 'checked' : ''} onchange="handleCheckboxChange()">
-          </div>
-        </td>
-        <td class="col-action">
-          <button class="btn-delete" title="Delete Row" onclick="deleteRow(this)">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
-        </td>
-      `;
+    document.getElementById("logout").addEventListener("click", () => {
+      try { sessionStorage.clear(); } catch (e) {}
+      window.location.href = "index.html";
+    });
 
-      tbody.appendChild(tr);
-      updateRowNumbers();
-    }
-
-    /**
-     * Auto-add new row when user types in the last row
-     */
-    function handleInput(inputElement) {
-      const currentRow = inputElement.closest('tr');
-      const isLastRow = currentRow === tbody.lastElementChild;
-
-      // If user starts typing in the last row, automatically append a new empty row
-      if (isLastRow && inputElement.value.trim() !== '') {
-        addRow();
-      }
-
-      saveSessionData();
-      updatePracticeButtonState();
-    }
-
-    /**
-     * Checkbox state change listener
-     */
-    function handleCheckboxChange() {
-      saveSessionData();
-      updatePracticeButtonState();
-    }
-
-    /**
-     * Delete a row from the table
-     */
-    function deleteRow(btn) {
-      const row = btn.closest('tr');
-      
-      // Keep at least one row active
-      if (tbody.rows.length === 1) {
-        row.querySelector('.input-word').value = '';
-        row.querySelector('.input-meaning').value = '';
-        row.querySelector('.chk-practice').checked = true;
-      } else {
-        row.remove();
-      }
-
-      // Ensure the bottom row is ready for input if needed
-      const lastRow = tbody.lastElementChild;
-      const wordVal = lastRow.querySelector('.input-word').value.trim();
-      const meaningVal = lastRow.querySelector('.input-meaning').value.trim();
-      if (wordVal !== '' || meaningVal !== '') {
-        addRow();
-      }
-
-      updateRowNumbers();
-      saveSessionData();
-      updatePracticeButtonState();
-    }
-
-    /**
-     * Update STT (sequence numbers) dynamically
-     */
-    function updateRowNumbers() {
-      Array.from(tbody.rows).forEach((row, index) => {
-        row.querySelector('.col-stt').textContent = index + 1;
-      });
-    }
-
-    /**
-     * Toggle Select All / Deselect All checkboxes
-     */
-    function toggleSelectAll(selectState) {
-      const checkboxes = tbody.querySelectorAll('.chk-practice');
-      checkboxes.forEach(chk => {
-        const row = chk.closest('tr');
-        const word = row.querySelector('.input-word').value.trim();
-        const meaning = row.querySelector('.input-meaning').value.trim();
-
-        // Only toggle non-empty rows or all rows
-        if (word || meaning || !selectState) {
-          chk.checked = selectState;
-        }
-      });
-
-      saveSessionData();
-      updatePracticeButtonState();
-    }
-
-    /**
-     * Collect valid table entries and save to sessionStorage
-     */
-    function saveSessionData() {
-      const vocabList = [];
-      Array.from(tbody.rows).forEach(row => {
-        const word = row.querySelector('.input-word').value.trim();
-        const meaning = row.querySelector('.input-meaning').value.trim();
-        const selected = row.querySelector('.chk-practice').checked;
-
-        if (word || meaning) {
-          vocabList.push({ word, meaning, selected });
-        }
-      });
-
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(vocabList));
-    }
-
-    /**
-     * Update "Start Practice" button state and count badge
-     */
-    function updatePracticeButtonState() {
-      let count = 0;
-      Array.from(tbody.rows).forEach(row => {
-        const word = row.querySelector('.input-word').value.trim();
-        const selected = row.querySelector('.chk-practice').checked;
-        if (word && selected) {
-          count++;
-        }
-      });
-
-      selectedCountSpan.textContent = count;
-      btnPractice.disabled = count === 0;
-    }
-
-    /**
-     * Save practice list and navigate to luyentap.html
-     */
-    function startPractice() {
-      const practiceList = [];
-      Array.from(tbody.rows).forEach(row => {
-        const word = row.querySelector('.input-word').value.trim();
-        const meaning = row.querySelector('.input-meaning').value.trim();
-        const selected = row.querySelector('.chk-practice').checked;
-
-        if (word && meaning && selected) {
-          practiceList.push({ word, meaning });
-        }
-      });
-
-      if (practiceList.length === 0) {
-        alert("Please ensure selected items have both word and meaning filled!");
-        return;
-      }
-
-      // Store practice words specifically for luyentap.html
-      sessionStorage.setItem('practice_words', JSON.stringify(practiceList));
-
-      window.location.href = 'luyentap.html';
-    }
-
-    /**
-     * Clear local session data on logout without redirecting
-     */
-    function logout() {
-      localStorage.removeItem('userSession');
-      sessionStorage.clear();
-      alert("Session cleared.");
-    }
-
-    /**
-     * Utility: Escape HTML characters to prevent XSS
-     */
-    function escapeHtml(text) {
-      return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+    load();
+    render();
   </script>
 </body>
 </html>
