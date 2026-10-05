@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vocabulary Management - VocabMaster</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Authentication & Session Check (Runs immediately before rendering) -->
+  <script>
+    (function checkAuth() {
+      const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+      const sessionRaw = localStorage.getItem('userSession');
+
+      if (!sessionRaw) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        const session = JSON.parse(sessionRaw);
+        const isExpired = (Date.now() - session.loginTime) > SESSION_TIMEOUT_MS;
+
+        if (!session.isLoggedIn || isExpired) {
+          localStorage.removeItem('userSession');
+          window.location.href = 'index.html';
+        }
+      } catch (e) {
+        localStorage.removeItem('userSession');
+        window.location.href = 'index.html';
+      }
+    })();
+  </script>
+
+  <style>
+    /* ==========================================
+       1. COLOR VARIABLES & GENERAL RESET
+       ========================================== */
+    :root {
+      --primary-color: #C0392B;       /* Maple Red / Crimson */
+      --primary-hover: #A93226;       /* Darker Crimson */
+      --bg-light: #F9EBEA;            /* Light maple tint background */
+      --card-bg: #FFFFFF;
+      --text-dark: #2C3E50;
+      --text-muted: #7F8C8D;
+      --border-color: #EAEDED;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 8px 24px rgba(192, 57, 43, 0.12);
+      --transition: all 0.25s ease-in-out;
+      --border-radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================
+       2. NAVIGATION BAR
+       ========================================== */
+    .navbar {
+      background-color: var(--card-bg);
+      border-bottom: 2px solid var(--primary-color);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 70px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-item a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-item a:hover,
+    .nav-item a.active {
+      color: var(--primary-color);
+      background-color: #FDEDEC;
+    }
+
+    .btn-logout {
+      background-color: var(--primary-color);
+      color: white !important;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-logout:hover {
+      background-color: var(--primary-hover) !important;
+    }
+
+    /* ==========================================
+       3. MAIN CONTENT CONTAINER
+       ========================================== */
+    .main-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+      width: 100%;
+      flex: 1;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+      background: var(--card-bg);
+      padding: 20px 25px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .page-title h1 {
+      font-size: 1.6rem;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .page-title p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .action-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .btn-secondary {
+      background-color: #F2F4F4;
+      color: var(--text-dark);
+    }
+
+    .btn-secondary:hover {
+      background-color: #E5E7E9;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary:disabled {
+      background-color: #E6B0AA;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* ==========================================
+       4. DYNAMIC VOCABULARY TABLE
+       ========================================== */
+    .table-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    .vocab-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .vocab-table th {
+      background-color: #FDEDEC;
+      color: var(--primary-color);
+      padding: 14px 16px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .vocab-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .vocab-table tbody tr:hover {
+      background-color: #FEF9E7;
+    }
+
+    .col-stt { width: 60px; text-align: center; font-weight: 600; color: var(--text-muted); }
+    .col-word { width: 38%; }
+    .col-meaning { width: 38%; }
+    .col-practice { width: 100px; text-align: center; }
+    .col-action { width: 80px; text-align: center; }
+
+    .table-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #D5D8DC;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+      background-color: #FAFAFA;
+    }
+
+    .table-input:focus {
+      border-color: var(--primary-color);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary-color);
+      cursor: pointer;
+    }
+
+    .btn-delete {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-delete:hover {
+      color: var(--primary-color);
+      background-color: #FDEDEC;
+    }
+
+    /* ==========================================
+       5. FOOTER
+       ========================================== */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: auto;
+    }
+
+    /* Responsive adjustment for Mobile */
+    @media (max-width: 768px) {
+      .navbar { padding: 0 1rem; }
+      .nav-links span { display: none; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .action-controls { width: 100%; justify-content: space-between; }
+      .btn { flex: 1; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="trangchu.html" class="brand-logo">
+        <i class="fa-solid fa-graduation-cap"></i> VocabMaster
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item">
+          <a href="trangchu.html"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+        </li>
+        <li class="nav-item">
+          <a href="tuvung.html" class="active"><i class="fa-solid fa-book"></i> <span>Vocabulary</span></a>
+        </li>
+        <li class="nav-item">
+          <a href="luyentap.html"><i class="fa-solid fa-dumbbell"></i> <span>Practice</span></a>
+        </li>
+        <li class="nav-item">
+          <a href="#" onclick="logout()" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="main-container">
+    
+    <!-- PAGE HEADER & ACTION CONTROLS -->
+    <div class="page-header">
+      <div class="page-title">
+        <h1><i class="fa-solid fa-list-check"></i> Vocabulary Management</h1>
+        <p>Type your vocabulary below. Words are automatically saved long-term and new rows appear as you type!</p>
+      </div>
+
+      <div class="action-controls">
+        <button class="btn btn-secondary" onclick="toggleSelectAll(true)">
+          <i class="fa-solid fa-square-check"></i> Select All
+        </button>
+        <button class="btn btn-secondary" onclick="toggleSelectAll(false)">
+          <i class="fa-solid fa-square"></i> Deselect All
+        </button>
+        <button id="btn-practice" class="btn btn-primary" onclick="startPractice()" disabled>
+          <i class="fa-solid fa-play"></i> Start Practice (<span id="selected-count">0</span>)
+        </button>
+      </div>
+    </div>
+
+    <!-- DYNAMIC VOCABULARY TABLE CARD -->
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table class="vocab-table">
+          <thead>
+            <tr>
+              <th class="col-stt">#</th>
+              <th class="col-word">English Word</th>
+              <th class="col-meaning">Meaning</th>
+              <th class="col-practice">Practice</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody id="vocab-tbody">
+            <!-- Dynamic rows will be inserted here by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    &copy; 2026 VocabMaster. T.T
+  </footer>
+
+  <!-- ==========================================
+     6. JAVASCRIPT LOGIC
+     ========================================== -->
+  <script>
+    // Persistent Storage Key (localStorage for long-term saving)
+    const PERSISTENT_STORAGE_KEY = 'vocab_master_list';
+    
+    const tbody = document.getElementById('vocab-tbody');
+    const btnPractice = document.getElementById('btn-practice');
+    const selectedCountSpan = document.getElementById('selected-count');
+
+    /**
+     * Initialize page content on load
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSavedVocabulary();
+      updatePracticeButtonState();
+    });
+
+    /**
+     * Load existing vocabulary from localStorage (persistent long-term storage)
+     */
+    function loadSavedVocabulary() {
+      const savedData = localStorage.getItem(PERSISTENT_STORAGE_KEY);
+      if (savedData) {
+        try {
+          const words = JSON.parse(savedData);
+          if (Array.isArray(words) && words.length > 0) {
+            words.forEach(item => addRow(item.word, item.meaning, item.selected));
+            // Always ensure an empty row at the bottom for new entry
+            addRow();
+            updateRowNumbers();
+            return;
+          }
+        } catch (e) {
+          console.error("Error reading saved vocabulary from localStorage:", e);
+        }
+      }
+      // Default: Create initial empty row if no data exists
+      addRow();
+    }
+
+    /**
+     * Dynamically create a new table row
+     */
+    function addRow(word = '', meaning = '', selected = true) {
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td class="col-stt"></td>
+        <td class="col-word">
+          <input type="text" class="table-input input-word" placeholder="e.g. Apple" value="${escapeHtml(word)}" oninput="handleInput(this)">
+        </td>
+        <td class="col-meaning">
+          <input type="text" class="table-input input-meaning" placeholder="e.g. Quả táo" value="${escapeHtml(meaning)}" oninput="handleInput(this)">
+        </td>
+        <td class="col-practice">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" class="chk-practice" ${selected ? 'checked' : ''} onchange="handleCheckboxChange()">
+          </div>
+        </td>
+        <td class="col-action">
+          <button class="btn-delete" title="Delete Row" onclick="deleteRow(this)">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+      updateRowNumbers();
+    }
+
+    /**
+     * Auto-add new row when typing in the last row & automatically save to localStorage
+     */
+    function handleInput(inputElement) {
+      const currentRow = inputElement.closest('tr');
+      const isLastRow = currentRow === tbody.lastElementChild;
+
+      // Automatically append a new empty row if user starts typing in the last row
+      if (isLastRow && inputElement.value.trim() !== '') {
+        addRow();
+      }
+
+      savePersistentData();
+      updatePracticeButtonState();
+    }
+
+    /**
+     * Checkbox state change listener
+     */
+    function handleCheckboxChange() {
+      savePersistentData();
+      updatePracticeButtonState();
+    }
+
+    /**
+     * Delete a row from the table & update localStorage
+     */
+    function deleteRow(btn) {
+      const row = btn.closest('tr');
+      
+      // Keep at least one row active in the table
+      if (tbody.rows.length === 1) {
+        row.querySelector('.input-word').value = '';
+        row.querySelector('.input-meaning').value = '';
+        row.querySelector('.chk-practice').checked = true;
+      } else {
+        row.remove();
+      }
+
+      // Ensure the bottom row is ready for input if needed
+      const lastRow = tbody.lastElementChild;
+      const wordVal = lastRow.querySelector('.input-word').value.trim();
+      const meaningVal = lastRow.querySelector('.input-meaning').value.trim();
+      if (wordVal !== '' || meaningVal !== '') {
+        addRow();
+      }
+
+      updateRowNumbers();
+      savePersistentData();
+      updatePracticeButtonState();
+    }
+
+    /**
+     * Update STT (sequence numbers) dynamically
+     */
+    function updateRowNumbers() {
+      Array.from(tbody.rows).forEach((row, index) => {
+        row.querySelector('.col-stt').textContent = index + 1;
+      });
+    }
+
+    /**
+     * Toggle Select All / Deselect All checkboxes
+     */
+    function toggleSelectAll(selectState) {
+      const checkboxes = tbody.querySelectorAll('.chk-practice');
+      checkboxes.forEach(chk => {
+        const row = chk.closest('tr');
+        const word = row.querySelector('.input-word').value.trim();
+        const meaning = row.querySelector('.input-meaning').value.trim();
+
+        // Only toggle non-empty rows or all rows when deselecting
+        if (word || meaning || !selectState) {
+          chk.checked = selectState;
+        }
+      });
+
+      savePersistentData();
+      updatePracticeButtonState();
+    }
+
+    /**
+     * Save vocabulary list persistently to localStorage (Long-term persistence)
+     */
+    function savePersistentData() {
+      const vocabList = [];
+      Array.from(tbody.rows).forEach(row => {
+        const word = row.querySelector('.input-word').value.trim();
+        const meaning = row.querySelector('.input-meaning').value.trim();
+        const selected = row.querySelector('.chk-practice').checked;
+
+        if (word || meaning) {
+          vocabList.push({ word, meaning, selected });
+        }
+      });
+
+      localStorage.setItem(PERSISTENT_STORAGE_KEY, JSON.stringify(vocabList));
+    }
+
+    /**
+     * Update "Start Practice" button active state and count badge
+     */
+    function updatePracticeButtonState() {
+      let count = 0;
+      Array.from(tbody.rows).forEach(row => {
+        const word = row.querySelector('.input-word').value.trim();
+        const selected = row.querySelector('.chk-practice').checked;
+        if (word && selected) {
+          count++;
+        }
+      });
+
+      selectedCountSpan.textContent = count;
+      btnPractice.disabled = count === 0;
+    }
+
+    /**
+     * Store selected items to sessionStorage and navigate to luyentap.html
+     */
+    function startPractice() {
+      const practiceList = [];
+      Array.from(tbody.rows).forEach(row => {
+        const word = row.querySelector('.input-word').value.trim();
+        const meaning = row.querySelector('.input-meaning').value.trim();
+        const selected = row.querySelector('.chk-practice').checked;
+
+        if (word && meaning && selected) {
+          practiceList.push({ word, meaning });
+        }
+      });
+
+      if (practiceList.length === 0) {
+        alert("Please select words with both English Word and Meaning filled!");
+        return;
+      }
+
+      // Store practice words in sessionStorage for luyentap.html to read
+      sessionStorage.setItem('practice_words', JSON.stringify(practiceList));
+      
+      // Navigate to practice page
+      window.location.href = 'luyentap.html';
+    }
+
+    /**
+     * Logout Handler
+     */
+    function logout() {
+      localStorage.removeItem('userSession');
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    /**
+     * Utility: Escape HTML characters to prevent XSS
+     */
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
