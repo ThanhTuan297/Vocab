@@ -16,9 +16,9 @@
        1. COLOR VARIABLES & GENERAL RESET
        ========================================== */
     :root {
-      --primary-color: #C0392B;       /* Maple Red / Crimson */
-      --primary-hover: #A93226;       /* Darker Crimson */
-      --bg-light: #F9EBEA;            /* Soft Maple Light Red */
+      --primary-color: #C0392B;       /* Crimson */
+      --primary-hover: #A93226;
+      --bg-light: #F9EBEA;
       --card-bg: #FFFFFF;
       --text-dark: #2C3E50;
       --text-muted: #7F8C8D;
@@ -108,17 +108,6 @@
       background-color: #FDEDEC;
     }
 
-    .btn-logout {
-      background-color: var(--primary-color);
-      color: white !important;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-logout:hover {
-      background-color: var(--primary-hover) !important;
-    }
-
     /* ==========================================
        3. MAIN CONTAINER & STATE VIEWS
        ========================================== */
@@ -145,7 +134,6 @@
       display: none !important;
     }
 
-    /* General Button Styling */
     .btn {
       padding: 12px 24px;
       border-radius: 10px;
@@ -210,7 +198,7 @@
     }
 
     /* ==========================================
-       5. QUIZ VIEW (PROGRESS & QUESTION CARD)
+       5. QUIZ VIEW
        ========================================== */
     .quiz-header {
       margin-bottom: 25px;
@@ -223,10 +211,6 @@
       font-weight: 700;
       font-size: 0.95rem;
       margin-bottom: 12px;
-    }
-
-    .progress-info {
-      color: var(--text-dark);
     }
 
     .score-info {
@@ -275,7 +259,6 @@
       word-break: break-word;
     }
 
-    /* Answers Grid */
     .answers-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -317,12 +300,6 @@
       background-color: #FDEDEC;
     }
 
-    .answer-btn:hover:not(:disabled) .prefix {
-      background-color: var(--primary-color);
-      color: white;
-    }
-
-    /* Answer States */
     .answer-btn.correct {
       background-color: var(--correct-bg) !important;
       border-color: var(--correct-border) !important;
@@ -345,7 +322,6 @@
       color: white !important;
     }
 
-    /* Feedback Banner & Footer */
     .quiz-footer {
       display: flex;
       justify-content: space-between;
@@ -369,27 +345,11 @@
     /* ==========================================
        6. RESULT VIEW
        ========================================== */
-    .result-view {
-      text-align: center;
-    }
+    .result-view { text-align: center; }
+    .result-header { margin-bottom: 30px; }
+    .result-header i { font-size: 3.5rem; color: var(--primary-color); margin-bottom: 12px; }
+    .result-header h2 { font-size: 1.8rem; color: var(--text-dark); margin-bottom: 6px; }
 
-    .result-header {
-      margin-bottom: 30px;
-    }
-
-    .result-header i {
-      font-size: 3.5rem;
-      color: var(--primary-color);
-      margin-bottom: 12px;
-    }
-
-    .result-header h2 {
-      font-size: 1.8rem;
-      color: var(--text-dark);
-      margin-bottom: 6px;
-    }
-
-    /* Stats Grid */
     .result-stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -404,37 +364,15 @@
       border-radius: 12px;
     }
 
-    .stat-card .value {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .stat-card .label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
+    .stat-card .value { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; }
+    .stat-card .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
 
     .stat-accuracy { color: var(--primary-color); }
     .stat-correct { color: var(--correct-color); }
     .stat-wrong { color: var(--wrong-color); }
 
-    /* Review List */
-    .review-section {
-      text-align: left;
-      margin-bottom: 30px;
-    }
-
-    .review-section h3 {
-      font-size: 1.1rem;
-      margin-bottom: 15px;
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .review-section { text-align: left; margin-bottom: 30px; }
+    .review-section h3 { font-size: 1.1rem; margin-bottom: 15px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
 
     .review-list {
       list-style: none;
@@ -453,32 +391,13 @@
       font-size: 0.95rem;
     }
 
-    .review-item:last-child {
-      border-bottom: none;
-    }
+    .review-item:last-child { border-bottom: none; }
+    .review-item .word { font-weight: 700; color: var(--primary-color); }
+    .review-item .meaning { color: var(--text-muted); }
 
-    .review-item .word {
-      font-weight: 700;
-      color: var(--primary-color);
-    }
+    .result-actions { display: flex; gap: 15px; justify-content: center; }
+    .result-actions .btn { flex: 1; }
 
-    .review-item .meaning {
-      color: var(--text-muted);
-    }
-
-    .result-actions {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-    }
-
-    .result-actions .btn {
-      flex: 1;
-    }
-
-    /* ==========================================
-       7. FOOTER & RESPONSIVE
-       ========================================== */
     .footer {
       text-align: center;
       padding: 20px;
@@ -514,9 +433,6 @@
         </li>
         <li class="nav-item">
           <a href="luyentap.html" class="active"><i class="fa-solid fa-dumbbell"></i> <span>Practice</span></a>
-        </li>
-        <li class="nav-item">
-          <a href="#" onclick="logout()" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
         </li>
       </ul>
     </div>
@@ -592,12 +508,9 @@
         </div>
       </div>
 
-      <!-- Incorrect Words Review Section -->
       <div id="review-section" class="review-section hidden">
         <h3><i class="fa-solid fa-circle-exclamation" style="color: var(--primary-color);"></i> Words to Review</h3>
-        <ul id="review-list" class="review-list">
-          <!-- Injected dynamically -->
-        </ul>
+        <ul id="review-list" class="review-list"></ul>
       </div>
 
       <div class="result-actions">
@@ -612,23 +525,17 @@
 
   </main>
 
-  <!-- FOOTER -->
   <footer class="footer">
     &copy; 2026 VocabMaster. All rights reserved.
   </footer>
 
-  <!-- ==========================================
-     8. JAVASCRIPT LOGIC & QUIZ ENGINE
-     ========================================== -->
   <script>
-    // --- FALLBACK DISTRACTOR BANK (Guarantees 4 options if user selects < 4 words) ---
     const FALLBACK_DISTRACTORS = [
       "Thành công", "Kiên trì", "Khám phá", "Cơ hội", "Sáng tạo", 
       "Phát triển", "Thách thức", "Mục tiêu", "Động lực", "Thói quen", 
       "Tập trung", "Thành tựu", "Cải thiện", "Tri thức", "Kinh nghiệm"
     ];
 
-    // State Variables
     let practiceWords = [];
     let currentQuestionIndex = 0;
     let correctCount = 0;
@@ -636,7 +543,6 @@
     let wrongWordsList = [];
     let isAnswered = false;
 
-    // DOM Elements
     const viewEmpty = document.getElementById('view-empty');
     const viewQuiz = document.getElementById('view-quiz');
     const viewResult = document.getElementById('view-result');
@@ -645,9 +551,6 @@
       initQuiz();
     });
 
-    /**
-     * Initialize Quiz: Load data from sessionStorage and setup view
-     */
     function initQuiz() {
       const storedData = sessionStorage.getItem('practice_words');
 
@@ -663,10 +566,8 @@
           return;
         }
 
-        // Shuffle question sequence at start
         shuffleArray(practiceWords);
         
-        // Reset Quiz metrics
         currentQuestionIndex = 0;
         correctCount = 0;
         wrongCount = 0;
@@ -680,9 +581,6 @@
       }
     }
 
-    /**
-     * Helper to toggle views cleanly
-     */
     function showView(targetView) {
       viewEmpty.classList.add('hidden');
       viewQuiz.classList.add('hidden');
@@ -691,9 +589,6 @@
       targetView.classList.remove('hidden');
     }
 
-    /**
-     * Render current question card and generate 4 multiple-choice options
-     */
     function loadQuestion() {
       isAnswered = false;
       document.getElementById('feedback-msg').innerHTML = '';
@@ -702,7 +597,6 @@
 
       const currentItem = practiceWords[currentQuestionIndex];
 
-      // Update UI Progress Info
       const total = practiceWords.length;
       document.getElementById('current-q-num').textContent = currentQuestionIndex + 1;
       document.getElementById('total-q-num').textContent = total;
@@ -712,28 +606,22 @@
       const progressPercent = ((currentQuestionIndex) / total) * 100;
       document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
 
-      // Set target word
       document.getElementById('question-word').textContent = currentItem.word;
 
-      // --- DISTRACTOR GENERATION ALGORITHM ---
-      // 1. Correct meaning
       const options = [currentItem.meaning];
 
-      // 2. Collect other meanings from current practice dataset
       const otherMeaningsInSet = practiceWords
         .filter(item => item.meaning !== currentItem.meaning)
         .map(item => item.meaning);
       
       shuffleArray(otherMeaningsInSet);
 
-      // Add options from current set
       for (let m of otherMeaningsInSet) {
         if (options.length < 4 && !options.includes(m)) {
           options.push(m);
         }
       }
 
-      // 3. If options < 4, top up from FALLBACK_DISTRACTORS
       if (options.length < 4) {
         const fallbacksCopy = [...FALLBACK_DISTRACTORS];
         shuffleArray(fallbacksCopy);
@@ -745,10 +633,8 @@
         }
       }
 
-      // 4. Shuffle final 4 options
       shuffleArray(options);
 
-      // Render Answer Buttons
       const answersContainer = document.getElementById('answers-container');
       answersContainer.innerHTML = '';
 
@@ -762,34 +648,26 @@
       });
     }
 
-    /**
-     * Answer Selection & Evaluation Handler
-     */
     function handleAnswerSelect(selectedBtn, selectedText, correctMeaning, currentItem) {
-      if (isAnswered) return; // Prevent multiple clicks
+      if (isAnswered) return;
       isAnswered = true;
 
       const allBtns = document.querySelectorAll('.answer-btn');
       const feedbackMsg = document.getElementById('feedback-msg');
 
-      // Disable all options
       allBtns.forEach(btn => btn.disabled = true);
 
       if (selectedText === correctMeaning) {
-        // CORRECT ANSWER
         correctCount++;
         selectedBtn.classList.add('correct');
         feedbackMsg.className = 'feedback-msg correct-text';
         feedbackMsg.innerHTML = `<i class="fa-solid fa-circle-check"></i> Excellent! That is correct.`;
       } else {
-        // INCORRECT ANSWER
         wrongCount++;
         selectedBtn.classList.add('wrong');
         
-        // Track for review
         wrongWordsList.push(currentItem);
 
-        // Highlight correct option
         allBtns.forEach(btn => {
           const textSpan = btn.querySelector('.opt-text');
           if (textSpan && textSpan.textContent.trim() === correctMeaning) {
@@ -801,17 +679,12 @@
         feedbackMsg.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Incorrect! Correct answer: <strong>${escapeHtml(correctMeaning)}</strong>`;
       }
 
-      // Update counters & progress
       document.getElementById('score-correct-count').textContent = correctCount;
       document.getElementById('score-wrong-count').textContent = wrongCount;
 
-      // Show Continue Button
       document.getElementById('btn-next').classList.remove('hidden');
     }
 
-    /**
-     * Advance to next question or complete quiz
-     */
     function nextQuestion() {
       currentQuestionIndex++;
       if (currentQuestionIndex < practiceWords.length) {
@@ -821,11 +694,7 @@
       }
     }
 
-    /**
-     * Calculate final statistics and render Results View
-     */
     function showResults() {
-      // Set progress bar to 100%
       document.getElementById('quiz-progress-bar').style.width = '100%';
 
       const total = practiceWords.length;
@@ -835,7 +704,6 @@
       document.getElementById('res-correct').textContent = correctCount;
       document.getElementById('res-wrong').textContent = wrongCount;
 
-      // Populate Incorrect Words Review List
       const reviewSection = document.getElementById('review-section');
       const reviewList = document.getElementById('review-list');
       reviewList.innerHTML = '';
@@ -858,9 +726,6 @@
       showView(viewResult);
     }
 
-    /**
-     * Restart current quiz set
-     */
     function restartQuiz() {
       shuffleArray(practiceWords);
       currentQuestionIndex = 0;
@@ -872,9 +737,6 @@
       loadQuestion();
     }
 
-    /**
-     * Utility: Fisher-Yates Array Shuffle Algorithm
-     */
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -882,9 +744,6 @@
       }
     }
 
-    /**
-     * Utility: Escape HTML characters
-     */
     function escapeHtml(text) {
       return text
         .replace(/&/g, "&amp;")
@@ -892,15 +751,6 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-    }
-
-    /**
-     * Logout Handler
-     */
-    function logout() {
-      localStorage.removeItem('userSession');
-      sessionStorage.clear();
-      window.location.href = 'index.html';
     }
   </script>
 </body>
