@@ -11,32 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Authentication & Session Check (Runs immediately before rendering) -->
-  <script>
-    (function checkAuth() {
-      const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-      const sessionRaw = localStorage.getItem('userSession');
-
-      if (!sessionRaw) {
-        window.location.href = 'index.html';
-        return;
-      }
-
-      try {
-        const session = JSON.parse(sessionRaw);
-        const isExpired = (Date.now() - session.loginTime) > SESSION_TIMEOUT_MS;
-
-        if (!session.isLoggedIn || isExpired) {
-          localStorage.removeItem('userSession');
-          window.location.href = 'index.html';
-        }
-      } catch (e) {
-        localStorage.removeItem('userSession');
-        window.location.href = 'index.html';
-      }
-    })();
-  </script>
-
   <style>
     /* ==========================================
        1. COLOR VARIABLES & GENERAL RESET
@@ -640,7 +614,7 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    &copy; 2026 VocabMaster, T.T
+    &copy; 2026 VocabMaster. All rights reserved.
   </footer>
 
   <!-- ==========================================
@@ -661,7 +635,6 @@
     let wrongCount = 0;
     let wrongWordsList = [];
     let isAnswered = false;
-    let isInternalNavigation = false;
 
     // DOM Elements
     const viewEmpty = document.getElementById('view-empty');
@@ -925,30 +898,10 @@
      * Logout Handler
      */
     function logout() {
-      isInternalNavigation = true;
       localStorage.removeItem('userSession');
       sessionStorage.clear();
       window.location.href = 'index.html';
     }
-
-    /**
-     * Intercept internal link clicks to protect session data during internal navigation
-     */
-    document.addEventListener('click', (e) => {
-      const anchor = e.target.closest('a');
-      if (anchor && anchor.getAttribute('href') && !anchor.getAttribute('href').startsWith('#')) {
-        isInternalNavigation = true;
-      }
-    });
-
-    /**
-     * SESSION CLEANUP: Clear practice temporary data if browser tab/app is closed
-     */
-    window.addEventListener('beforeunload', () => {
-      if (!isInternalNavigation) {
-        sessionStorage.removeItem('practice_words');
-      }
-    });
   </script>
 </body>
 </html>
