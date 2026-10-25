@@ -1,186 +1,65 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vocab</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500&family=Playfair+Display:wght@500;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --ink: #0f1420;
-      --ink-soft: #171d2c;
-      --paper: #f2efe8;
-      --muted: #9aa0ae;
-      --gold: #c2a566;
-      --serif: "Playfair Display", "Times New Roman", serif;
-      --sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
-    }
+<!-- Thư viện đọc PDF và DOCX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<div class="app-container">
+  <!-- Thanh công cụ chính -->
+  <header class="toolbar">
+    <div class="top-row">
+      <div class="logo">Bilingual<span>Studio</span> <small class="badge">PRO</small></div>
+      
+      <div class="api-settings">
+        <select id="modelSelect" title="Chọn mô hình AI">
+          <option value="gemini-2.5-flash">Gemini 2.5 Flash (Khuyên dùng)</option>
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+        </select>
+        <input type="password" id="apiKeyInput" placeholder="Dán Gemini API Key (Trống = Demo)...">
+      </div>
+    </div>
 
-    html { height: 100%; }
+    <div class="bottom-row">
+      <!-- Chọn file -->
+      <div class="file-group">
+        <label for="fileUpload" class="btn btn-secondary">📂 Chọn File (.pdf, .docx, .txt)</label>
+        <input type="file" id="fileUpload" accept=".txt, .docx, .pdf">
+        <span id="fileNameDisplay" class="file-name">Chưa chọn file</span>
+      </div>
 
-    body {
-      min-height: 100%;
-      background: var(--ink);
-      color: var(--paper);
-      font-family: var(--sans);
-      -webkit-font-smoothing: antialiased;
-    }
+      <!-- Điều khiển dịch -->
+      <div class="action-group">
+        <button id="startBtn" class="btn btn-primary" disabled>▶ Bắt đầu dịch</button>
+        <button id="pauseBtn" class="btn btn-warning" style="display: none;">⏸ Tạm dừng</button>
+        <button id="clearCacheBtn" class="btn btn-danger-outline" title="Xóa dữ liệu lưu tạm để dịch lại từ đầu">🗑 Xóa bộ nhớ</button>
+      </div>
 
-    /* ---------- Header ---------- */
-    .topbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px clamp(20px, 5vw, 64px);
-      background: rgba(15, 20, 32, 0.85);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(194, 165, 102, 0.18);
-    }
-
-    .logo {
-      font-family: var(--serif);
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      color: var(--paper);
-      text-decoration: none;
-    }
-
-    .nav {
-      display: flex;
-      gap: clamp(16px, 3vw, 40px);
-      list-style: none;
-    }
-
-    .nav a {
-      position: relative;
-      padding: 6px 0;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    .nav a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 1px;
-      background: var(--gold);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.25s ease;
-    }
-
-    .nav a:hover,
-    .nav a[aria-current="page"] { color: var(--paper); }
-
-    .nav a:hover::after,
-    .nav a[aria-current="page"]::after { transform: scaleX(1); }
-
-    a:focus-visible {
-      outline: 2px solid var(--gold);
-      outline-offset: 4px;
-      border-radius: 2px;
-    }
-
-    /* ---------- Hero ---------- */
-    .hero {
-      min-height: 100vh;
-      min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 110px 24px 56px;
-      background: radial-gradient(ellipse at 50% 35%, var(--ink-soft) 0%, var(--ink) 70%);
-    }
-
-    .hero h1 {
-      font-family: var(--serif);
-      font-weight: 800;
-      font-size: clamp(1.9rem, 5.4vw, 4.2rem);
-      line-height: 1.2;
-      letter-spacing: 0.015em;
-      max-width: 18ch;
-      color: var(--paper);
-      animation: rise 0.9s ease both;
-    }
-
-    .hero h1 span { display: block; }
-    .hero h1 span + span { color: var(--gold); }
-
-    .hero figure {
-      margin-top: clamp(28px, 5vh, 48px);
-      animation: rise 0.9s 0.15s ease both;
-    }
-
-    .hero img {
-      display: block;
-      width: auto;
-      height: auto;
-      max-width: min(420px, 100%);
-      max-height: 42vh;
-      border-radius: 14px;
-      border: 1px solid rgba(194, 165, 102, 0.35);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-    }
-
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: none; }
-    }
-
-    @media (max-width: 520px) {
-      .topbar { padding: 14px 16px; }
-      .logo { font-size: 1.35rem; }
-      .nav { gap: 14px; }
-      .nav a { font-size: 0.8rem; }
-      .hero img { max-height: 36vh; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .hero h1, .hero figure { animation: none; }
-      .nav a, .nav a::after { transition: none; }
-    }
-  </style>
-</head>
-<body>
-
-  <header class="topbar">
-    <a class="logo" href="index.html" aria-label="Vocab - Trang chủ">Vocab</a>
-    <nav aria-label="Điều hướng chính">
-      <ul class="nav">
-        <li><a href="index.html" aria-current="page">Trang Chủ</a></li>
-        <li><a href="tuvung.html">Lưu Từ Vựng</a></li>
-        <li><a href="luyentap.html">Luyện Tập</a></li>
-      </ul>
-    </nav>
+      <!-- Chế độ xem & Xuất file -->
+      <div class="export-group">
+        <div class="view-toggle">
+          <button id="sideBySideBtn" class="toggle-btn active">Song song</button>
+          <button id="interlinearBtn" class="toggle-btn">Xen kẽ</button>
+        </div>
+        <button id="exportWordBtn" class="btn btn-success" disabled>⬇ Tải Word (.doc)</button>
+      </div>
+    </div>
   </header>
 
-  <main class="hero">
-    <h1>
-      <span>THIÊN THƯỢNG THIÊN HẠ,</span>
-      <span>DUY NGÃ ĐỘC TÔN</span>
-    </h1>
-    <figure>
-      <img src="images.jpg" alt="Hình minh họa">
-    </figure>
-  </main>
+  <!-- Thanh tiến trình thông minh -->
+  <div id="progressSection" class="progress-section" style="display: none;">
+    <div class="progress-header">
+      <span id="statusLabel">Đang chuẩn bị...</span>
+      <span id="percentLabel">0% (0/0 đoạn)</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div id="progressBarFill" class="progress-bar-fill"></div>
+    </div>
+  </div>
 
-</body>
-</html>
+  <!-- Khung hiển thị nội dung -->
+  <main id="readerContainer" class="reader-container mode-grid">
+    <div class="empty-state">
+      <h3>Trình dịch sách & tài liệu song ngữ tự động</h3>
+      <p>Hỗ trợ tự động lưu tiến độ, chống lỗi ngắt quãng API và xuất file Word 2 cột đối chiếu.</p>
+    </div>
+  </main>
+</div>
