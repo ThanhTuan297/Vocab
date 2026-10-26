@@ -219,7 +219,6 @@ body {
 
 .loading-text { color: #94a3b8; font-style: italic; }
 .done-text { color: var(--text-main); }
-/* ===== Bổ sung ===== */
 .glossary {
   width: 100%;
   padding: 8px 12px;
@@ -228,7 +227,28 @@ body {
   font: inherit;
   font-size: 0.82rem;
   resize: vertical;
+  margin-top: 6px;
 }
+.glossary-box summary { cursor: pointer; font-size: 0.82rem; color: var(--text-muted); }
+.export-select {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  background: var(--surface);
+}
+
+/* Thanh tiến độ nằm trong toolbar */
+.toolbar .progress-section {
+  margin-top: 0;
+  padding: 10px 0 0 0;
+  border: none;
+  border-top: 1px solid #f1f5f9;
+  border-radius: 0;
+  background: transparent;
+}
+.toolbar .progress-bar-bg { height: 8px; }
+
 .col-translated[contenteditable]:focus { outline: 2px solid #93c5fd; border-radius: 4px; }
 .retry-btn {
   position: absolute;
@@ -246,10 +266,8 @@ body {
 .retry-btn:hover { color: var(--primary); }
 @media (hover: none) { .retry-btn { opacity: 1; } }
 
-/* Điện thoại: xếp dọc thay vì 2 cột hẹp */
 @media (max-width: 720px) {
   .mode-grid .bilingual-row { grid-template-columns: 1fr; gap: 10px; }
   .mode-grid .col-original { border-right: none; padding-right: 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
   #apiKeyInput { width: 100%; }
-  .toolbar { position: static; }
 }
