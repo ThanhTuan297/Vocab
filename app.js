@@ -529,32 +529,53 @@ async function callGemini(batch, prevContext, apiKey, modelName, signal) {
   }
 }
 
-// ===== Xuất Word =====
+// ===== Xuất file kiểu sách (Word .doc) =====
+const exportMode = $('exportMode');
+
 exportWordBtn.addEventListener('click', () => {
   if (!parsedChunks.length) return;
   if (parsedChunks.some(c => c.demo) && !confirm("Có đoạn mới chỉ là bản Demo (chưa dịch thật). Vẫn xuất?")) return;
-  const isSideBySide = readerContainer.classList.contains('mode-grid');
-  const rows = parsedChunks.map(c => isSideBySide
-    ? `<tr>
-        <td style="width:50%; padding:8pt; border:1pt solid #cbd5e1; vertical-align:top;">${escapeHtml(c.original)}</td>
-        <td style="width:50%; padding:8pt; border:1pt solid #cbd5e1; vertical-align:top;">${escapeHtml(c.translated || "")}</td>
-      </tr>`
-    : `<tr><td style="padding:8pt; border:1pt solid #cbd5e1;">
-          <p style="margin:0 0 6pt 0; font-weight:bold;">${escapeHtml(c.original)}</p>
-          <p style="margin:0; color:#0f766e;">${escapeHtml(c.translated || "")}</p>
-      </td></tr>`).join("");
+  const mode = exportMode.value;
+  const title = escapeHtml(currentFileName.replace(/\.[^/.]+$/, ""));
+  let body = "";
+
+  if (mode === 'columns') {
+    body = `<table style="width:100%; border-collapse:collapse;">` + parsedChunks.map(c => `<tr>
+      <td style="width:50%; padding:6pt; border:0.5pt solid #999; vertical-align:top;">${escapeHtml(c.original)}</td>
+      <td style="width:50%; padding:6pt; border:0.5pt solid #999; vertical-align:top;">${escapeHtml(c.translated || "")}</td></tr>`).join("") + `</table>`;
+  } else if (mode === 'translation') {
+    body = parsedChunks.map(c => `<p class="tran">${escapeHtml(c.translated || c.original)}</p>`).join("\n");
+  } else {
+    body = parsedChunks.map(c => c.skip || c.translated === c.original
+      ? `<p class="tran">${escapeHtml(c.original)}</p>`
+      : `<p class="orig">${escapeHtml(c.original)}</p><p class="tran">${escapeHtml(c.translated || "")}</p>`).join("\n");
+  }
 
   const wordHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>${escapeHtml(currentFileName)}</title></head>
-    <body style="font-family:'Times New Roman', serif; font-size:12pt;">
-      <h2 style="text-align:center;">TÀI LIỆU SONG NGỮ: ${escapeHtml(currentFileName)}</h2>
-      <table style="width:100%; border-collapse:collapse; margin-top:12pt;">${rows}</table>
-    </body></html>`;
+<head><meta charset="utf-8"><title>${title}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+  @page Section1 { size: 21cm 29.7cm; margin: 2.5cm 2.2cm 2.5cm 2.2cm; }
+  div.Section1 { page: Section1; }
+  body { font-family: 'Times New Roman', serif; font-size: 13pt; }
+  p { margin: 0 0 8pt 0; line-height: 150%; text-align: justify; }
+  p.tran { text-indent: 1cm; }
+  p.orig { font-size: 10.5pt; font-style: italic; color: #666666; text-indent: 1cm; margin-bottom: 3pt; line-height: 130%; }
+  h1.book { font-size: 28pt; text-align: center; margin-top: 8cm; }
+  p.sub { text-align: center; color: #666666; font-size: 12pt; text-indent: 0; }
+</style></head>
+<body><div class="Section1">
+  <div style="page-break-after:always;">
+    <h1 class="book">${title}</h1>
+    <p class="sub">${mode === 'translation' ? 'Bản dịch tiếng Việt' : mode === 'columns' ? 'Bản đối chiếu song ngữ' : 'Bản song ngữ'}</p>
+  </div>
+  ${body}
+</div></body></html>`;
 
   const url = URL.createObjectURL(new Blob(['\ufeff', wordHtml], { type: 'application/msword' }));
   const a = document.createElement('a');
   a.href = url;
-  a.download = `Song_Ngu_${currentFileName.replace(/\.[^/.]+$/, "")}.doc`;
+  a.download = `${mode === 'translation' ? 'Ban_Dich' : 'Song_Ngu'}_${currentFileName.replace(/\.[^/.]+$/, "")}.doc`;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 });
